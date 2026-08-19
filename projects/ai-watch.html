@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Watch — Watch-Aware Tutor — Saiyed Saizan Shahnawaz</title>
+<meta name="description" content="A Chrome MV3 extension that tutors on the video you're watching and cites only what you've actually watched. The hard problem was identity across five await boundaries. TypeScript, 19k lines, 149 tests.">
+<link rel="canonical" href="https://saiyedsaizan.github.io/projects/ai-watch.html">
+<meta property="og:title" content="AI Watch — Watch-Aware Tutor">
+<meta property="og:description" content="A tutor that cites only what you've actually watched. The hard problem was concurrency, not prompting.">
+<meta name="theme-color" content="#f7f4ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14120f" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f4ee'/%3E%3Ctext x='16' y='24' font-family='Georgia,serif' font-size='22' text-anchor='middle' fill='%23c9451f'%3ES%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../assets/style.css">
+<script>try{var t=localStorage.getItem("theme");if(t==="dark"||(!t&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="mast">
+  <div class="w">
+    <a class="nm" href="../">Saiyed Saizan Shahnawaz</a>
+    <span class="sp"></span>
+    <nav>
+      <a href="../#work">Work</a>
+      <a href="../writing/" class="hide-sm">Writing</a>
+      <a href="../Saiyed-Saizan-Shahnawaz-Resume.pdf">Résumé</a>
+      <button class="theme-btn" type="button" aria-label="Switch to dark theme">
+        <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="w-read">
+
+  <div class="page-head">
+    <a class="back" href="../#work">← Selected Work</a>
+    <h1>AI Watch — Watch-Aware Tutor</h1>
+    <p class="dek">A tutor for the video you're watching that will only cite the parts you've actually
+      watched. The interesting problem turned out to be concurrency, not prompting.</p>
+    <div class="kv">
+      <span>Year <b>2026</b></span>
+      <span>Stack <b>TypeScript · Chrome MV3 · Express</b></span>
+      <span>Size <b>19k lines · 134 files</b></span>
+      <span>Tests <b>149</b></span>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span class="n">5</span><span class="l">await boundaries</span></div>
+    <div class="stat"><span class="n">4</span><span class="l">trust boundaries</span></div>
+    <div class="stat"><span class="n">0</span><span class="l">databases</span></div>
+    <div class="stat"><span class="n">2</span><span class="l">innerHTML uses</span></div>
+  </div>
+
+  <div class="prose">
+
+    <h2>The premise</h2>
+    <p>You're forty minutes into a lecture and something doesn't land. You ask about it. A generic
+      assistant will happily answer using the part of the video you haven't reached yet — which is
+      either a spoiler or, in a lecture, an explanation that depends on machinery you haven't been
+      given.</p>
+    <p>So the product promise is narrower than "chatbot on a video": answer from what this person has
+      actually watched. That promise is what generates every hard problem below. It turns a prompting
+      exercise into a state-tracking problem across four process boundaries, in a runtime that kills
+      your worker whenever it likes.</p>
+
+    <h2>The bug worth the whole project</h2>
+    <p>Answering a question is a chain of awaits — read the stored session, get the tab's URL, resolve
+      a transcript, call the model, write the answer back. YouTube is a single-page app. Every one of
+      those awaits is a window in which the user can navigate to a different video without a page
+      load, and the worker never notices.</p>
+    <p>The failure mode is exact and it is worse than a wrong answer: <em>one video's transcript
+      answers another video's question</em>, with citations, confidently.</p>
+
+    <figure class="wide" data-viz="await">
+      <div class="fig-top"><svg data-await-svg role="img" aria-label="Five await boundaries with a single-page navigation partway through"></svg></div>
+      <div class="ctrls">
+        <button class="ctrl" type="button" data-await-act="on" aria-pressed="true">Re-validate identity</button>
+        <button class="ctrl" type="button" data-await-act="off" aria-pressed="false">Don't</button>
+        <button class="ctrl" type="button" data-await-act="step">Step</button>
+        <button class="ctrl" type="button" data-await-act="reset">Reset</button>
+      </div>
+      <figcaption><b>Fig. 1</b> — <span data-await-note></span></figcaption>
+    </figure>
+
+    <p>The fix is unglamorous and it is the right one. Tab URL, video id and session id are re-read
+      after <em>every</em> await, all five of them, and any mismatch aborts the request rather than
+      returning it. The client re-checks identity a third time when the response arrives, because by
+      then the page may have moved again.</p>
+
+    <div class="pull">Extension storage is the source of truth, not worker memory. Manifest V3 kills
+      service workers whenever it wants, and memory that can vanish mid-flight isn't state — it's a
+      cache with opinions.</div>
+
+    <p>Mutations are serialized per tab through a promise-tail queue, so reads, writes and broadcasts
+      can't interleave within a tab while different tabs still run in parallel. In-flight requests go
+      through a registry with one abort controller each and duplicate-id rejection. The queue's tail
+      cleanup only deletes if the tail is still the current one — the small detail that stops the
+      cleanup from clobbering a request that arrived while it was running.</p>
+
+    <h2>What "actually watched" means</h2>
+    <p>Watched time is accumulated online from a 250ms sampler rather than the browser's
+      <code>timeupdate</code> event, which fires anywhere from four to sixty-six times a second and is
+      a terrible thing to hang a state machine on.</p>
+    <p>The subtle part is telling playback apart from a seek. A fixed delta gets it wrong the moment
+      someone watches at 1.5×, or the timer jitters under load. The threshold adapts to elapsed wall
+      time and the current playback rate, coalesces intervals within a third of a second, and drops
+      anything under fifty milliseconds as noise.</p>
+
+    <figure class="wide">
+      <div class="fig-top">
+        <svg viewBox="-1 0 562 162" role="img" aria-label="Transcript chunks are only eligible for citation when fully contained inside a watched range">
+          <g class="fig-mono" font-size="9">
+            <text x="0" y="10" class="f-ink3" letter-spacing=".9">CONTAINMENT, NOT OVERLAP</text>
+
+            <text x="0" y="34" class="f-ink2" font-size="8.5">watched</text>
+            <rect x="0" y="40" width="548" height="14" class="f-none s-rule2" stroke-width="1"/>
+            <rect x="27"  y="40" width="126" height="14" class="f-seq3"/>
+            <rect x="230" y="40" width="71"  height="14" class="f-seq3"/>
+            <rect x="384" y="40" width="137" height="14" class="f-seq3"/>
+
+            <text x="0" y="80" class="f-ink2" font-size="8.5">transcript chunks</text>
+            <g>
+              <rect x="11"  y="86" width="38" height="16" class="f-none s-rule2 dash" stroke-width="1.1"/>
+              <rect x="55"  y="86" width="38" height="16" class="f-bluebg s-blue" stroke-width="1.1"/>
+              <rect x="99"  y="86" width="44" height="16" class="f-bluebg s-blue" stroke-width="1.1"/>
+              <rect x="164" y="86" width="44" height="16" class="f-none s-rule2 dash" stroke-width="1.1"/>
+              <rect x="241" y="86" width="44" height="16" class="f-bluebg s-blue" stroke-width="1.1"/>
+              <rect x="318" y="86" width="44" height="16" class="f-none s-rule2 dash" stroke-width="1.1"/>
+              <rect x="395" y="86" width="44" height="16" class="f-bluebg s-blue" stroke-width="1.1"/>
+              <rect x="450" y="86" width="44" height="16" class="f-bluebg s-blue" stroke-width="1.1"/>
+              <rect x="505" y="86" width="38" height="16" class="f-none s-rule2 dash" stroke-width="1.1"/>
+            </g>
+
+            <text x="0" y="122" class="f-blue" font-size="9">■ 5 eligible to cite — fully inside a watched range</text>
+            <text x="0" y="138" class="f-ink3" font-size="9">□ 4 discarded — partially watched, so they don't count</text>
+            <text x="0" y="152" class="f-ink3" font-size="8.5">stricter than overlap on purpose: fewer false positives, at the cost of some real signal</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption><b>Fig. 2</b> — A chunk qualifies only if it sits entirely inside a merged watched
+        interval. Overlap would be more generous and would break the promise: a chunk you saw two
+        seconds of is not a chunk you watched. The cost is real — partially-watched material gets
+        dropped — and it's mitigated by pulling in immediate neighbours of the chunks that do
+        qualify.</figcaption>
+    </figure>
+
+    <p>Ranking the eligible chunks is a keyword scorer with a thirty-word stop set: two points per
+      keyword hit, one for a repeat, four for containing the full question as a substring, ties broken
+      by timestamp. No TF-IDF library, no embeddings. For a few hundred transcript chunks it is fast,
+      completely explainable, and has no model in it — which matters, because the ranker is what
+      decides the evidence the model is allowed to see.</p>
+
+    <h2>Treating the model's output as untrusted input</h2>
+    <p>Prompt injection gets the attention, and it's handled: untrusted fields are HTML-escaped and
+      wrapped in named tags so the structure itself contains them, rather than relying on an
+      instruction not to obey the transcript.</p>
+    <p>The less common half is the return direction. Citations that come back from the model are
+      re-verified server-side against the watched chunks and the watched ranges. The model cannot
+      fabricate a timestamp for content the user never reached — not because it was asked not to, but
+      because a fabricated citation fails the check and is dropped. For two of the three providers the
+      model isn't even asked for citations; they're attached deterministically from the ranker.</p>
+
+    <h3>The rest of the security surface</h3>
+    <ul>
+      <li>A message from a content script is authorized only if the sender id matches the extension,
+        the frame id is zero (a compromised iframe can't speak for the page), the tab id is a safe
+        integer, the origin is exactly YouTube, and the URL's video id matches the one being claimed —
+        all five, simultaneously.</li>
+      <li>Origin checking rejects the empty-credential trick,
+        <code>https://www.youtube.com@evil.com</code>, which a naive prefix comparison accepts.</li>
+      <li>API keys live in local storage, never sync storage, because sync uploads to Google — with the
+        reason written in a comment next to the line.</li>
+      <li>A recursive scan rejects any payload carrying a key that looks like a token, password, cookie
+        or secret before it can cross the native-messaging boundary. Structural, not vigilant.</li>
+      <li>Two <code>innerHTML</code> uses in the entire codebase: a static stylesheet and clearing a
+        node. Everything else is <code>textContent</code>. The UI lives in a closed shadow root and
+        submissions require a trusted event, so the page can't synthesize a question on your behalf.</li>
+    </ul>
+
+    <h2>Parsing what YouTube actually gives you</h2>
+    <p>There is no clean transcript API. Captions arrive in three formats, hand-parsed, with a
+      negotiation chain that falls back through five of them. Two of the XML variants disagree about
+      both attribute names and units — seconds in one, milliseconds in the other.</p>
+    <p>The player response object is embedded in the page HTML, where no regex will safely find its
+      end, so it's extracted with a brace-matching scanner that tracks string and escape state and is
+      bounded to two megabytes. When captions don't exist at all, there's a three-tier fallback: the
+      page's caption API, then the browser's text tracks, then scraping the visible subtitle overlay
+      and synthesizing timestamps from the video's current time.</p>
+    <p>That last tier is ugly. It is also the difference between working and not working on videos
+      that have no caption track, and I'd rather have the ugly tier than the excuse.</p>
+
+    <h2>What I'd tell you in an interview</h2>
+    <ul>
+      <li><strong>There is no end-to-end testing.</strong> 149 unit tests pass, and exactly one
+        integration test exists. Chrome 116 is the declared target but real-browser behaviour is
+        unverified — I won't say "tested in Chrome."</li>
+      <li><strong>Roughly 2,200 lines of content-script code are effectively untested</strong> because
+        of how the test glob resolves. It's the layer I'd cover first.</li>
+      <li><strong>Streaming is specified but not wired.</strong> The event type exists and one provider
+        advertises it, but every consumer collects the full response. The blocker is real —
+        request/response messaging needs a long-lived port for true streaming — and it's named in a
+        comment rather than papered over.</li>
+      <li><strong>The manifest requests broad optional host permissions.</strong> I'd rather discuss
+        that than have it discovered.</li>
+      <li><strong>No database, no deployment, no auth system, no users.</strong></li>
+      <li><strong>Ten commits over four months, seven of them on one day.</strong> The history is a bad
+        proxy for the work here.</li>
+    </ul>
+
+    <div class="todo"><b>To add</b>Repository link, and a 15-second screen capture of the tutor
+      answering with a citation — the watched-range promise is much easier to show than to describe.</div>
+
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="w">
+    <span>© <span id="year">2026</span> Saiyed Saizan Shahnawaz</span>
+    <span class="sp"></span>
+    <a href="../#work">Work</a>
+    <a href="https://github.com/SaiyedSaizan">GitHub</a>
+    <a href="mailto:shahnawaz@wisc.edu">Email</a>
+  </div>
+</footer>
+
+<script src="../assets/main.js"></script>
+<script src="../assets/viz.js"></script>
+</body>
+</html>
