@@ -112,20 +112,14 @@ Light UI screenshots are dimmed slightly in dark mode via `--shot-filter` so the
 
 ## Open items
 
-Marked in the pages with amber `To add` blocks. Search for `class="todo"` and delete each block once
-handled.
+Left in the pages as HTML comments so visitors never see them. Search for `PRIVATE NOTE` and
+`TODO:` and delete each once handled.
 
 - **Agent Governance Runtime has no real screenshot.** It's the only project still using a diagram
   on the homepage. Captures of the approvals console and the `audit-verify` CLI output would fill
   the slot; the HTML has a commented-out `<figure class="shot">` showing exactly what to drop in.
 - **Repository links** on the Agent Governance Runtime and AI Watch pages.
-- **Physical AI: teleoperated or a learned policy?** The photo caption says "pick-and-place task"
-  because that is what the clip shows. It deliberately does not claim the arm was running a policy.
-  Confirm which and the page can say so.
-- **A résumé wording conflict.** Your résumé says the Flow tool-calling layer verifies generated
-  answers against retrieved context. Your own audit is explicit that this holds in the
-  academic/planning cluster only, *not* in general chat. The site says the narrower, defensible
-  version. Worth aligning the résumé.
+- **Physical AI** — episode count, and the calibration failure worth writing up.
 - **Optional: a link-preview image.** Nothing references one, so nothing is broken. For a rich card
   when the link is shared, add a 1200×630 `assets/img/og.png` and point `<meta property="og:image">`
   at it in each page's `<head>`.

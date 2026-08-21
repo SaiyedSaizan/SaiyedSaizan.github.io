@@ -330,11 +330,6 @@ html[data-theme="dark"] .btn { color: #1a0d08; }
   font-family: var(--serif); font-size: 23px; line-height: 1.32; color: var(--ink);
   border-left: 2px solid var(--rule-2); padding: 3px 0 3px 22px; margin: 30px 0; max-width: 36ch;
 }
-.todo {
-  border-left: 2px solid var(--accent); background: var(--accent-bg);
-  padding: 13px 16px; margin: 26px 0; font-size: 15px; color: var(--ink-2); max-width: 68ch;
-}
-.todo b { font-size: 13px; color: var(--accent-2); display: block; margin-bottom: 4px; }
 
 /* ----------------------------------------------------------------- figures */
 figure { margin: 30px 0 34px; }
