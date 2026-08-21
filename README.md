@@ -3,54 +3,26 @@
 Personal site. Plain HTML, CSS and JavaScript — **no build step, no dependencies, no npm install**.
 Edit a file, push, it's live.
 
+Live at <https://saiyedsaizan.github.io>.
+
 ---
 
-## Deploy it (about 5 minutes, $0 forever)
+## Publishing a change
 
-**1. Create the repository.** On GitHub, make a new **public** repo named exactly:
-
-```
-SaiyedSaizan.github.io
-```
-
-The name has to match your username — that's what makes GitHub serve it at the root domain instead
-of a subpath. Don't add a README, .gitignore, or licence during creation; the folder already has
-what it needs.
-
-**2. Push this folder.** From inside it:
+From this folder:
 
 ```bash
-git init
 git add .
-git commit -m "Personal site"
-git branch -M main
-git remote add origin https://github.com/SaiyedSaizan/SaiyedSaizan.github.io.git
-git push -u origin main
+git commit -m "..."
+git push
 ```
 
-**3. Turn Pages on.** Repo → **Settings** → **Pages** → under *Build and deployment*, set
-**Source** to `Deploy from a branch`, **Branch** to `main` and folder to `/ (root)`. Save.
-
-**4. Wait about a minute**, then open:
-
-```
-https://saiyedsaizan.github.io
-```
-
-Every later change is just `git add . && git commit -m "..." && git push`. Live in under a minute.
-
-### Cost
-
-Zero, permanently. GitHub Pages is free for public repos, HTTPS included. A custom domain
-(`saizan.dev`, roughly $12/year) is the *only* thing that would ever cost money, and it's optional —
-add it later under Settings → Pages → Custom domain and Pages will issue the certificate for free.
-
----
+Live in under a minute. GitHub Pages is already configured to serve `main` from the repo root.
 
 ## Preview locally
 
-Opening `index.html` straight from Finder/Explorer mostly works, but root-relative links (like the
-404 page) won't resolve. Run a real server instead:
+Opening `index.html` from Explorer mostly works, but root-relative links (the 404 page) won't
+resolve. Run a real server:
 
 ```bash
 python3 -m http.server 8000
@@ -75,6 +47,7 @@ assets/
   style.css                    all styling, both themes, one file
   main.js                      theme toggle + footer year
   viz.js                       the interactive figures
+  img/                         project screenshots (WebP)
   fonts/                       Instrument Serif (SIL Open Font Licence)
 Saiyed-Saizan-Shahnawaz-Resume.pdf
 404.html · robots.txt · sitemap.xml · .nojekyll
@@ -85,45 +58,74 @@ starting with an underscore (including `writing/_template.html`).
 
 ---
 
-## Editing
+## Design rules this site tries to keep
 
-**Text** — open the `.html` file and edit between the tags. That's the whole workflow.
+Worth knowing before you edit, because breaking them is how it starts looking generic.
 
-**Colours and type** — everything lives in the `:root` block at the top of `assets/style.css`, with
-the dark theme in the `html[data-theme="dark"]` block right below it. Change a value in both places
-and it propagates everywhere, figures included.
+1. **Monospace only for real technical metadata** — stacks, figure labels, code, terminal output.
+   Not for section headings, dates, or eyebrow labels.
+2. **The accent does one job at a time.** If two things on a screen are orange, one of them is wrong.
+3. **Evidence over decoration.** A real screenshot beats a diagram; a diagram beats an icon. If
+   there's no real asset yet, leave the slot honest rather than filling it.
+4. **Not every project gets identical treatment.** The hierarchy on the homepage is deliberate.
 
-> The figure colours were checked with a contrast/colour-blindness validator against both
-> backgrounds. Red and blue were chosen because red/green fails for protanopia — a colour-blind
-> reader couldn't tell a broken record from a valid one. If you swap the accent, re-check it.
+### Colour
 
-**Figures** — SVG can't reliably use CSS variables in presentation attributes, so figures paint
-through classes instead: `f-blue` `f-acc` `f-ink2` `f-ink3` `f-bluebg` `f-accbg` `f-surf` `f-none`
-for fills, `s-blue` `s-acc` `s-ink3` `s-rule` `s-rule2` for strokes, plus `dash`. Use those and a
-figure follows the theme toggle with no second copy of the artwork.
+Everything is in the `:root` block at the top of `assets/style.css`, with the dark theme in the
+`html[data-theme="dark"]` block right below it.
 
-**A new blog post**
+Both palettes were checked against a contrast and colour-blindness validator:
+
+- Figures use **red and blue**, never red and green — red/green fails protanopia separation at
+  ΔE 5.7, which would make a broken record indistinguishable from a valid one.
+- `--accent` (#c9451f) is only 4.4:1 on the paper, so it's used for **fills, marks and borders**.
+  Text that needs to be orange uses `--accent-2` (#9c3416, 6.6:1).
+- `--ink-3` is the lightest text tone that still clears 4.5:1 on the paper. Don't lighten it.
+
+If you change the palette, re-check it. The whole site currently passes axe-core with zero
+violations in both themes.
+
+### Figures
+
+SVG can't reliably use CSS variables in presentation attributes, so figures paint through classes:
+`f-blue` `f-acc` `f-ink2` `f-ink3` `f-bluebg` `f-accbg` `f-surf` `f-none` for fills, `s-blue`
+`s-acc` `s-ink3` `s-rule` `s-rule2` for strokes, plus `dash`. Use those and a figure follows the
+theme toggle with no second copy of the artwork.
+
+### Images
+
+Screenshots go in `assets/img/` as WebP. Always set `width` and `height` on the `<img>` (prevents
+layout shift), plus `loading="lazy"` and `decoding="async"`, and write real alt text describing
+what the screenshot *shows*, not that it is a screenshot.
+
+Light UI screenshots are dimmed slightly in dark mode via `--shot-filter` so they don't glare.
+
+### A new blog post
 
 1. `cp writing/_template.html writing/your-slug.html`
 2. Replace every `{{ ... }}` placeholder
-3. In `writing/index.html`, delete the `.empty` block and uncomment the `<ul class="posts">` list,
-   then add your row
+3. In `writing/index.html`, delete the `.empty` block, uncomment the `<ul class="posts">` list, add
+   your row
 4. Add the URL to `sitemap.xml`
 
 ---
 
-## Before you publish — open items
+## Open items
 
-These are marked in the pages themselves with amber `To add` blocks. Search for `class="todo"` and
-delete each block once you've handled it.
+Marked in the pages with amber `To add` blocks. Search for `class="todo"` and delete each block once
+handled.
 
+- **Agent Governance Runtime has no real screenshot.** It's the only project still using a diagram
+  on the homepage. Captures of the approvals console and the `audit-verify` CLI output would fill
+  the slot; the HTML has a commented-out `<figure class="shot">` showing exactly what to drop in.
 - **Repository links** on the Agent Governance Runtime and AI Watch pages.
+- **Physical AI: teleoperated or a learned policy?** The photo caption says "pick-and-place task"
+  because that is what the clip shows. It deliberately does not claim the arm was running a policy.
+  Confirm which and the page can say so.
 - **A résumé wording conflict.** Your résumé says the Flow tool-calling layer verifies generated
   answers against retrieved context. Your own audit is explicit that this holds in the
   academic/planning cluster only, *not* in general chat. The site says the narrower, defensible
-  version. Worth aligning the résumé so someone reading both doesn't catch a gap.
-- **The Physical AI page is thin** — it's the only one written from the résumé alone rather than a
-  code audit. A photo of the arms and a few specifics would fix it.
-- **Optional: a link-preview image.** Nothing references one, so nothing is broken. If you want a
-  rich card when the link is shared, add a 1200×630 `assets/og.png` and point
-  `<meta property="og:image">` at it in each page's `<head>`.
+  version. Worth aligning the résumé.
+- **Optional: a link-preview image.** Nothing references one, so nothing is broken. For a rich card
+  when the link is shared, add a 1200×630 `assets/img/og.png` and point `<meta property="og:image">`
+  at it in each page's `<head>`.

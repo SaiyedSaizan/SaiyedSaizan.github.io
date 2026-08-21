@@ -21,10 +21,11 @@
   <div class="w">
     <a class="nm" href="../">Saiyed Saizan Shahnawaz</a>
     <span class="sp"></span>
-    <nav>
-      <a href="../#work">Work</a>
+    <nav aria-label="Primary">
+      <a href="../#projects">Projects</a>
       <a href="../writing/" class="hide-sm">Writing</a>
       <a href="../Saiyed-Saizan-Shahnawaz-Resume.pdf">Résumé</a>
+      <a href="https://github.com/SaiyedSaizan" class="hide-sm" rel="me noopener">GitHub</a>
       <button class="theme-btn" type="button" aria-label="Switch to dark theme">
         <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
         <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
@@ -37,10 +38,10 @@
 <div class="w-read">
 
   <div class="page-head">
-    <a class="back" href="../#work">← Selected Work</a>
+    <a class="back" href="../#projects">← Projects</a>
     <h1>Physical AI &amp; Robot Learning</h1>
-    <p class="dek">Before a robot can learn anything, someone has to make the motors answer to the
-      right IDs. That was the work.</p>
+    <p class="dek">Hardware and simulation bring-up for a robot-learning setup: SO-101 leader/follower
+      arms, a depth camera, and Isaac Sim running on a remote GPU machine.</p>
     <div class="kv">
       <span>Year <b>2026</b></span>
       <span>Stack <b>Python · LeRobot · Isaac Sim · Orbbec SDK · Docker</b></span>
@@ -49,6 +50,14 @@
   </div>
 
   <div class="prose">
+
+    <figure class="evidence">
+      <img src="../assets/img/robot-arm.webp" width="1500" height="1013"
+           alt="The bench: an SO-101 arm mounted at the edge of a desk with its gripper open above a whiteboard marker, an Orbbec depth camera on a tripod pointed at the workspace, and an orange bin beside it holding picked objects."
+           loading="lazy" decoding="async">
+      <figcaption>The working bench — arm, depth camera on a tripod, and a pick-and-place task with
+        whiteboard markers and a bin.</figcaption>
+    </figure>
 
     <h2>Bringing up the arms</h2>
     <p>A leader/follower pair is the simplest useful teleoperation setup: you move the leader arm by
@@ -155,12 +164,11 @@
       <em>not</em> do here is train a policy, measure transfer, or publish a result — so those aren't
       claims I'll make.</p>
 
-    <div class="todo"><b>This page needs you</b>The other three write-ups were built from detailed
-      code audits; this one has only your résumé behind it, and it shows — it's the thinnest page on
-      the site. Anything you add makes it substantially better: what task the arms were being taught,
-      how many episodes you recorded, what broke during calibration and how you found it, whether the
-      depth-drop problem was yours to diagnose, and one photo or short clip of the arms running.
-      A photo alone would carry this page.</div>
+    <div class="todo"><b>Confirm before publishing</b>The caption above says "pick-and-place task"
+      because that is what the clip shows — the arm moving over markers with a bin beside it. I have
+      deliberately not said whether the arm was under teleoperation or running a learned policy,
+      because I don't know. Tell me which and I'll make the page say so. Also still worth adding: how
+      many episodes you recorded, and what broke during calibration and how you found it.</div>
 
   </div>
 </div>
@@ -170,7 +178,7 @@
   <div class="w">
     <span>© <span id="year">2026</span> Saiyed Saizan Shahnawaz</span>
     <span class="sp"></span>
-    <a href="../#work">Work</a>
+    <a href="../#projects">Projects</a>
     <a href="https://github.com/SaiyedSaizan">GitHub</a>
     <a href="mailto:shahnawaz@wisc.edu">Email</a>
   </div>
