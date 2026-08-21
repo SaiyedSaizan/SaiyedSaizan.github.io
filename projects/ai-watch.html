@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI Watch — Watch-Aware Tutor — Saiyed Saizan Shahnawaz</title>
+<title>AI Watch: Watch-Aware Tutor | Saiyed Saizan Shahnawaz</title>
 <meta name="description" content="A Chrome MV3 extension that tutors on the video you're watching and cites only what you've actually watched. The hard problem was holding identity across five await boundaries. TypeScript, 149 tests.">
 <link rel="canonical" href="https://saiyedsaizan.github.io/projects/ai-watch.html">
-<meta property="og:title" content="AI Watch — Watch-Aware Tutor">
+<meta property="og:title" content="AI Watch: Watch-Aware Tutor">
 <meta property="og:description" content="A tutor that cites only what you've actually watched. The hard problem was concurrency, not prompting.">
 <meta name="theme-color" content="#f7f4ee" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#14120f" media="(prefers-color-scheme: dark)">
@@ -23,7 +23,6 @@
     <span class="sp"></span>
     <nav aria-label="Primary">
       <a href="../#projects">Projects</a>
-      <a href="../writing/" class="hide-sm">Writing</a>
       <a href="../Saiyed-Saizan-Shahnawaz-Resume.pdf">Résumé</a>
       <a href="https://github.com/SaiyedSaizan" class="hide-sm" rel="me noopener">GitHub</a>
       <button class="theme-btn" type="button" aria-label="Switch to dark theme">
@@ -39,7 +38,7 @@
 
   <div class="page-head">
     <a class="back" href="../#projects">← Projects</a>
-    <h1>AI Watch — Watch-Aware Tutor</h1>
+    <h1>AI Watch: Watch-Aware Tutor</h1>
     <p class="dek">A Chrome extension that tutors on the video you're watching and cites only the
       parts you have actually watched. The interesting problem turned out to be concurrency, not
       prompting.</p>
@@ -61,8 +60,7 @@
 
     <h2>The premise</h2>
     <p>You're forty minutes into a lecture and something doesn't land. You ask about it. A generic
-      assistant will happily answer using the part of the video you haven't reached yet — which is
-      either a spoiler or, in a lecture, an explanation that depends on machinery you haven't been
+      assistant will happily answer using the part of the video you haven't reached yet, which is either a spoiler or, in a lecture, an explanation that depends on machinery you haven't been
       given.</p>
     <p>So the product promise is narrower than "chatbot on a video": answer from what this person has
       actually watched. That promise is what generates every hard problem below. It turns a prompting
@@ -73,12 +71,12 @@
       <img src="../assets/img/aiwatch-tutor.webp" width="1500" height="807"
            alt="The extension running on a YouTube page. A panel headed Watch-Aware Tutor says it is grounded to what you have watched, and answers &quot;what did the speaker explain in the last 20 seconds&quot; by citing approximately 01:13 to 01:33 and summarising the six elements the speaker listed."
            loading="lazy" decoding="async">
-      <figcaption>The panel states its own constraint — grounded to the watched portion only — and the
-        answer carries the time range it came from.</figcaption>
+      <figcaption>The panel states its own constraint, grounded to the watched portion only, and the
+      answer carries the time range it came from.</figcaption>
     </figure>
 
     <h2>The bug worth the whole project</h2>
-    <p>Answering a question is a chain of awaits — read the stored session, get the tab's URL, resolve
+    <p>Answering a question is a chain of awaits: read the stored session, get the tab's URL, resolve
       a transcript, call the model, write the answer back. YouTube is a single-page app. Every one of
       those awaits is a window in which the user can navigate to a different video without a page
       load, and the worker never notices.</p>
@@ -93,7 +91,7 @@
         <button class="ctrl" type="button" data-await-act="step">Step</button>
         <button class="ctrl" type="button" data-await-act="reset">Reset</button>
       </div>
-      <figcaption><b>Fig. 1</b> — <span data-await-note></span></figcaption>
+      <figcaption><b>Fig. 1.</b> <span data-await-note></span></figcaption>
     </figure>
 
     <p>The fix is unglamorous and it is the right one. Tab URL, video id and session id are re-read
@@ -102,14 +100,12 @@
       then the page may have moved again.</p>
 
     <div class="pull">Extension storage is the source of truth, not worker memory. Manifest V3 kills
-      service workers whenever it wants, and memory that can vanish mid-flight isn't state — it's a
-      cache with opinions.</div>
+      service workers whenever it wants, and memory that can vanish mid-flight isn't state. It's a cache with opinions.</div>
 
     <p>Mutations are serialized per tab through a promise-tail queue, so reads, writes and broadcasts
       can't interleave within a tab while different tabs still run in parallel. In-flight requests go
       through a registry with one abort controller each and duplicate-id rejection. The queue's tail
-      cleanup only deletes if the tail is still the current one — the small detail that stops the
-      cleanup from clobbering a request that arrived while it was running.</p>
+      cleanup only deletes if the tail is still the current one, the small detail that stops the cleanup from clobbering a request that arrived while it was running.</p>
 
     <h2>What "actually watched" means</h2>
     <p>Watched time is accumulated online from a 250ms sampler rather than the browser's
@@ -145,23 +141,23 @@
               <rect x="505" y="86" width="38" height="16" class="f-none s-rule2 dash" stroke-width="1.1"/>
             </g>
 
-            <text x="0" y="122" class="f-blue" font-size="9">■ 5 eligible to cite — fully inside a watched range</text>
-            <text x="0" y="138" class="f-ink3" font-size="9">□ 4 discarded — partially watched, so they don't count</text>
+            <text x="0" y="122" class="f-blue" font-size="9">■ 5 eligible to cite · fully inside a watched range</text>
+            <text x="0" y="138" class="f-ink3" font-size="9">□ 4 discarded · partially watched, so they don't count</text>
             <text x="0" y="152" class="f-ink3" font-size="8.5">stricter than overlap on purpose: fewer false positives, at the cost of some real signal</text>
           </g>
         </svg>
       </div>
-      <figcaption><b>Fig. 2</b> — A chunk qualifies only if it sits entirely inside a merged watched
+      <figcaption><b>Fig. 2.</b> A chunk qualifies only if it sits entirely inside a merged watched
         interval. Overlap would be more generous and would break the promise: a chunk you saw two
-        seconds of is not a chunk you watched. The cost is real — partially-watched material gets
-        dropped — and it's mitigated by pulling in immediate neighbours of the chunks that do
+        seconds of is not a chunk you watched. The cost is real: partially-watched material gets dropped, and it's mitigated by pulling in
+          immediate neighbours of the chunks that do
         qualify.</figcaption>
     </figure>
 
     <p>Ranking the eligible chunks is a keyword scorer with a thirty-word stop set: two points per
       keyword hit, one for a repeat, four for containing the full question as a substring, ties broken
       by timestamp. No TF-IDF library, no embeddings. For a few hundred transcript chunks it is fast,
-      completely explainable, and has no model in it — which matters, because the ranker is what
+      completely explainable, and has no model in it, which matters, because the ranker is what
       decides the evidence the model is allowed to see.</p>
 
     <h2>Treating the model's output as untrusted input</h2>
@@ -170,7 +166,7 @@
       instruction not to obey the transcript.</p>
     <p>The less common half is the return direction. Citations that come back from the model are
       re-verified server-side against the watched chunks and the watched ranges. The model cannot
-      fabricate a timestamp for content the user never reached — not because it was asked not to, but
+      fabricate a timestamp for content the user never reached, not because it was asked not to, but
       because a fabricated citation fails the check and is dropped. For two of the three providers the
       model isn't even asked for citations; they're attached deterministically from the ranker.</p>
 
@@ -178,12 +174,11 @@
     <ul>
       <li>A message from a content script is authorized only if the sender id matches the extension,
         the frame id is zero (a compromised iframe can't speak for the page), the tab id is a safe
-        integer, the origin is exactly YouTube, and the URL's video id matches the one being claimed —
-        all five, simultaneously.</li>
+        integer, the origin is exactly YouTube, and the URL's video id matches the one being claimed. All five conditions, simultaneously.</li>
       <li>Origin checking rejects the empty-credential trick,
         <code>https://www.youtube.com@evil.com</code>, which a naive prefix comparison accepts.</li>
-      <li>API keys live in local storage, never sync storage, because sync uploads to Google — with the
-        reason written in a comment next to the line.</li>
+      <li>API keys live in local storage, never sync storage, because sync uploads to Google, with the reason written in a comment next to the
+        line.</li>
       <li>A recursive scan rejects any payload carrying a key that looks like a token, password, cookie
         or secret before it can cross the native-messaging boundary. Structural, not vigilant.</li>
       <li>Two <code>innerHTML</code> uses in the entire codebase: a static stylesheet and clearing a
@@ -193,8 +188,7 @@
 
     <h2>Parsing what YouTube actually gives you</h2>
     <p>There is no clean transcript API. Captions arrive in three formats, hand-parsed, with a
-      negotiation chain that falls back through five of them. Two of the XML variants disagree about
-      both attribute names and units — seconds in one, milliseconds in the other.</p>
+      negotiation chain that falls back through five of them. Two of the XML variants disagree about both attribute names and units: seconds in one, milliseconds in the other.</p>
     <p>The player response object is embedded in the page HTML, where no regex will safely find its
       end, so it's extracted with a brace-matching scanner that tracks string and escape state and is
       bounded to two megabytes. When captions don't exist at all, there's a three-tier fallback: the
@@ -206,14 +200,12 @@
     <h2>What I'd tell you in an interview</h2>
     <ul>
       <li><strong>There is no end-to-end testing.</strong> 149 unit tests pass, and exactly one
-        integration test exists. Chrome 116 is the declared target but real-browser behaviour is
-        unverified — I won't say "tested in Chrome."</li>
+        integration test exists. Chrome 116 is the declared target but real-browser behaviour is unverified, so I won't say "tested in Chrome."</li>
       <li><strong>Roughly 2,200 lines of content-script code are effectively untested</strong> because
         of how the test glob resolves. It's the layer I'd cover first.</li>
       <li><strong>Streaming is specified but not wired.</strong> The event type exists and one provider
-        advertises it, but every consumer collects the full response. The blocker is real —
-        request/response messaging needs a long-lived port for true streaming — and it's named in a
-        comment rather than papered over.</li>
+        advertises it, but every consumer collects the full response. The blocker is real: request/response messaging needs a long-lived port for true streaming, and it's
+          named in a comment rather than papered over.</li>
       <li><strong>The manifest requests broad optional host permissions.</strong> I'd rather discuss
         that than have it discovered.</li>
       <li><strong>No database, no deployment, no auth system, no users.</strong></li>
@@ -221,9 +213,6 @@
         proxy for the work here.</li>
     </ul>
 
-    <!-- PRIVATE NOTE — not rendered. Delete once handled.
-         To add Repository link. A short screen recording of the citation changing as you watch further into a video would land the watched-range promise better than a still.
-    -->
 
   </div>
 </div>
@@ -234,6 +223,7 @@
     <span>© <span id="year">2026</span> Saiyed Saizan Shahnawaz</span>
     <span class="sp"></span>
     <a href="../#projects">Projects</a>
+    <a href="../writing/">Writing</a>
     <a href="https://github.com/SaiyedSaizan">GitHub</a>
     <a href="mailto:shahnawaz@wisc.edu">Email</a>
   </div>

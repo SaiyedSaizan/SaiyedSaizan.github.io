@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Flow — Campus Assistant — Saiyed Saizan Shahnawaz</title>
-<meta name="description" content="A UW–Madison assistant where the model narrates but never decides. Retrieval is exact SQL over a typed campus knowledge graph — no vector database. FastAPI, Postgres, Firestore, 58 tools.">
+<title>Flow: Campus Assistant | Saiyed Saizan Shahnawaz</title>
+<meta name="description" content="A UW–Madison assistant where the model narrates but never decides. Retrieval is exact SQL over a typed campus knowledge graph, with no vector database. FastAPI, Postgres, Firestore, 58 tools.">
 <link rel="canonical" href="https://saiyedsaizan.github.io/projects/flow.html">
-<meta property="og:title" content="Flow — Campus Assistant">
+<meta property="og:title" content="Flow: Campus Assistant">
 <meta property="og:description" content="The model narrates but never decides. Exact SQL over a typed campus graph, no vector database.">
 <meta name="theme-color" content="#f7f4ee" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#14120f" media="(prefers-color-scheme: dark)">
@@ -23,7 +23,6 @@
     <span class="sp"></span>
     <nav aria-label="Primary">
       <a href="../#projects">Projects</a>
-      <a href="../writing/" class="hide-sm">Writing</a>
       <a href="../Saiyed-Saizan-Shahnawaz-Resume.pdf">Résumé</a>
       <a href="https://github.com/SaiyedSaizan" class="hide-sm" rel="me noopener">GitHub</a>
       <button class="theme-btn" type="button" aria-label="Switch to dark theme">
@@ -39,9 +38,9 @@
 
   <div class="page-head">
     <a class="back" href="../#projects">← Projects</a>
-    <h1>Flow — Campus Assistant</h1>
+    <h1>Flow: Campus Assistant</h1>
     <p class="dek">A campus assistant where the model chooses what to look up but never decides the
-      answer. Retrieval is exact SQL over a typed knowledge graph — there is no vector database in it.</p>
+      answer. Retrieval is exact SQL over a typed knowledge graph. There is no vector database in it.</p>
     <div class="kv">
       <span>Year <b>2026</b></span>
       <span>Role <b>Summer Research Intern, UW–Madison Summer AI Lab · team of 3</b></span>
@@ -68,8 +67,7 @@
       graph, live HTTP feeds, and per-user Firestore documents. The answer is written from those
       results. When a lookup returns nothing the instruction is to say so rather than fill the gap.</p>
 
-    <div class="pull">There is no vector database anywhere in the system. Retrieval is exact SQL over
-      a typed graph — which is why answers can cite real records.</div>
+    <div class="pull">There is no vector database anywhere in the system. Retrieval is exact SQL over a typed graph, which is why answers can cite real records.</div>
 
     <figure class="evidence evidence-narrow">
       <img src="../assets/img/flow-grades.webp" width="760" height="1447"
@@ -82,9 +80,8 @@
     <p>That's an unfashionable choice and I think it's the right one for this problem. Campus data is
       structured: a course has a number, a dining hall has serving periods, a building has hours.
       Embedding all of that into a similarity search throws away the structure and buys fuzziness you
-      then have to defend against. Nodes and typed edges — with twenty-five edge predicates, direct
-      edges carrying full confidence and inferred ones carrying less — keep the structure and make the
-      retrieval step auditable.</p>
+      then have to defend against. Nodes and typed edges, with twenty-five edge predicates and direct edges carrying full confidence
+        while inferred ones carry less, keep the structure and make the retrieval step auditable.</p>
 
     <h2>Where the model is allowed to act</h2>
     <p>Being precise about this is the whole point, so here is the actual split rather than a
@@ -122,9 +119,9 @@
           </g>
         </svg>
       </div>
-      <figcaption><b>Fig. 1</b> — Eligibility and prerequisites are computed by pure Python with
+      <figcaption><b>Fig. 1.</b> Eligibility and prerequisites are computed by pure Python with
         three-valued logic: an unparsed requisite, a consent requirement, or a program restriction
-        resolves to <em>unknown</em> — never to a yes or a no. An assistant that guesses about your
+        resolves to <em>unknown</em>, never to a yes or a no. An assistant that guesses about your
         degree is worse than one that admits it doesn't know.</figcaption>
     </figure>
 
@@ -186,27 +183,27 @@
               <text x="466" y="144">weekly</text>
             </g>
 
-            <text x="0" y="172" class="f-ink3" font-size="8.5">orgs · events · course catalogue are crawled snapshots, re-run by hand — and labelled as snapshots</text>
+            <text x="0" y="172" class="f-ink3" font-size="8.5">orgs · events · course catalogue are crawled snapshots, re-run by hand and labelled as snapshots</text>
           </g>
         </svg>
       </div>
-      <figcaption><b>Fig. 2</b> — Each cadence is a scheduled job with a freshness test attached. Dining
+      <figcaption><b>Fig. 2.</b> Each cadence is a scheduled job with a freshness test attached. Dining
         trips a failure if the feed is more than twelve hours stale; building hours fail a test after
         eight days and are surfaced hedged, "as of &lt;date&gt;". When a live feed is unreachable the
         answer degrades to <code>live_unavailable</code> rather than crashing or, worse, silently
         serving yesterday's number as today's.</figcaption>
     </figure>
 
-    <p>Ingestion is idempotent by construction — deterministic node IDs, conflict-tolerant loaders, and
-      a savepoint per record so one malformed row can't take down a run. Re-running a crawl converges
+    <p>Ingestion is idempotent by construction: deterministic node IDs, conflict-tolerant loaders, and a
+      savepoint per record so one malformed row can't take down a run. Re-running a crawl converges
       rather than duplicating. Canvas syncs never let an empty feed clobber a populated cache, because
       "the API returned nothing this minute" and "you have no assignments" are different facts.</p>
 
     <h2>The privacy path</h2>
     <p>My main piece of this was the degree-audit parser. A student uploads a DARS PDF; we extract
-      completed courses, satisfied requirements, and what's still outstanding, deterministically —
-      rules and regular expressions over <code>pdfplumber</code>, with no model in the extraction path
-      — and then we throw the document away.</p>
+      completed courses, satisfied requirements, and what's still outstanding, deterministically, using rules and regular expressions over
+        <code>pdfplumber</code> with no model in the extraction path, and then we throw the document
+        away.</p>
 
     <figure class="wide">
       <div class="fig-top">
@@ -237,14 +234,14 @@
             <rect x="0" y="96" width="150" height="30" class="f-accbg s-acc" stroke-width="1.2"/>
             <text x="75" y="115" text-anchor="middle" class="f-acc" font-weight="700">bytes discarded</text>
 
-            <text x="166" y="108" class="f-ink3" font-size="8.5">nothing to leak, subpoena, or misplace later —</text>
+            <text x="166" y="108" class="f-ink3" font-size="8.5">nothing to leak, subpoena, or misplace later:</text>
             <text x="166" y="120" class="f-ink3" font-size="8.5">the safest document is the one you didn't keep</text>
 
             <text x="0" y="146" class="f-ink3" font-size="8.5">re-upload nudge after 180 days · separate encryption keys for DARS text and Canvas credentials</text>
           </g>
         </svg>
       </div>
-      <figcaption><b>Fig. 3</b> — Two encryption keys rather than one, split by blast radius: the Canvas
+      <figcaption><b>Fig. 3.</b> Two encryption keys rather than one, split by blast radius: the Canvas
         credential is decrypted only inside the Canvas service and never returned to a tool or a
         client; the DARS text layer is decrypted only in the import and provenance endpoints. Raw
         Canvas tokens never reach the model. Secrets are injected by systemd from outside the
@@ -258,18 +255,15 @@
       <img src="../assets/img/flow-instructors.webp" width="1200" height="909"
            alt="Flow comparing instructors and sections for GEN BUS 311. It reports that a single instructor teaches all sections, lists the lecture and discussion sections, and gives historical grade context including that instructor's average GPA against the course's other instructors."
            loading="lazy" decoding="async">
-      <figcaption>Asked to compare instructors, it answers that there is only one — then gives the
-        historical context anyway. Finding nothing is a valid answer.</figcaption>
+      <figcaption>Asked to compare instructors, it answers that there is only one, then gives the historical context anyway. Finding nothing is a valid answer.</figcaption>
     </figure>
 
     <h2>What I'd tell you in an interview</h2>
-    <p>This is a team project — three of us — and it's deployed as a hardened service behind a TLS
-      edge with scheduled data jobs and a golden-eval regression gate. It ran a live public demo with
+    <p>This is a team project, three of us, and it's deployed as a hardened service behind a TLS edge with scheduled data jobs and a golden-eval regression gate. It ran a live public demo with
       roughly a thousand logged chat turns across June and July. Things I would not claim:</p>
     <ul>
-      <li><strong>General chat has no automated answer-verifier.</strong> Grounding there is
-        architectural — tool-only data, pre-hedged tool summaries, an instruction never to fabricate —
-        but no program diffs the model's prose against the retrieved evidence. Real verification exists
+      <li><strong>General chat has no automated answer-verifier.</strong> Grounding there is architectural: tool-only data, pre-hedged tool summaries, an instruction never to
+        fabricate. But no program diffs the model's prose against the retrieved evidence. Real verification exists
         only in the academic and planning cluster, where a formal validator re-derives constraints from
         scratch and distrusts the solver. I'd rather say that precisely than let "verification layer"
         do work it hasn't earned.</li>
@@ -294,6 +288,7 @@
     <span>© <span id="year">2026</span> Saiyed Saizan Shahnawaz</span>
     <span class="sp"></span>
     <a href="../#projects">Projects</a>
+    <a href="../writing/">Writing</a>
     <a href="https://github.com/SaiyedSaizan">GitHub</a>
     <a href="mailto:shahnawaz@wisc.edu">Email</a>
   </div>

@@ -1,4 +1,4 @@
-/* saiyedsaizan.github.io — theme + nav. No dependencies. */
+/* saiyedsaizan.github.io. Theme + nav. No dependencies. */
 (function () {
   "use strict";
   var root = document.documentElement;

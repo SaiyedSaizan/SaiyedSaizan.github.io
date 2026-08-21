@@ -1,5 +1,5 @@
 /* ==========================================================================
-   saiyedsaizan.github.io — stylesheet
+   saiyedsaizan.github.io stylesheet
    Static site. No build step, no dependencies, no framework.
 
    Two rules this file tries to keep:
@@ -30,7 +30,7 @@
   --surf:     #fffdf8;
   --ink:      #16130f;
   --ink-2:    #4f4840;
-  --ink-3:    #726a5f;   /* 4.9:1 on the paper — the lighter tone failed AA */
+  --ink-3:    #726a5f;   /* 4.9:1 on the paper; the lighter tone failed AA */
   --rule:     #ddd6c8;
   --rule-2:   #c9c0ad;
 
@@ -176,8 +176,22 @@ html:not([data-theme="dark"]) .i-sun { display: none; }
 
 /* -------------------------------------------------------------------- hero
    Identity first. Name, what I build, where I am, what I'm looking for. */
-.hero { padding: 68px 0 40px; max-width: 660px; }
-@media (max-width: 700px) { .hero { padding: 40px 0 30px; } }
+.hero { padding: 66px 0 40px; }
+@media (max-width: 700px) { .hero { padding: 34px 0 30px; } }
+
+.hero-inner {
+  display: grid; grid-template-columns: minmax(0, 1fr) 286px;
+  gap: 50px; align-items: start;
+}
+.hero-text { max-width: 620px; }
+
+.portrait { margin: 0; border: 1px solid var(--rule); background: var(--surf); }
+.portrait img { display: block; width: 100%; height: auto; }
+
+@media (max-width: 900px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 24px; }
+  .portrait { order: -1; max-width: 156px; }   /* small and first on narrow screens */
+}
 
 .hero h1 { font-size: clamp(34px, 5.4vw, 50px); line-height: 1.06; margin-bottom: 16px; }
 
@@ -213,7 +227,7 @@ html[data-theme="dark"] .btn { color: #1a0d08; }
 }
 .exploring b { color: var(--ink-2); font-weight: 500; }
 
-/* The engineering line — demoted from headline to a supporting note. */
+/* The engineering line, demoted from headline to a supporting note. */
 .credo { font-style: italic; color: var(--ink-2); }
 
 /* ----------------------------------------------------------------- section */
@@ -372,7 +386,7 @@ html[data-theme="dark"] .term { background: #0e0c0a; }
 
 /* --------------------------------------------------- svg figure paint classes
    SVG presentation attributes don't reliably accept var(), so figures paint
-   through classes — which means every figure follows the theme for free. */
+   through classes, which means every figure follows the theme for free. */
 .f-ink   { fill: var(--ink); }
 .f-ink2  { fill: var(--ink-2); }
 .f-ink3  { fill: var(--ink-3); }

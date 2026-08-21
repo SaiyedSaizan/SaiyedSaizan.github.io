@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Saiyed Saizan Shahnawaz — Software Engineer</title>
-<meta name="description" content="Saiyed Saizan Shahnawaz — Computer Science at UW–Madison, graduating May 2028. I build AI systems, developer tools, and robotics software. Looking for Summer 2027 software engineering and AI internships.">
+<title>Saiyed Saizan Shahnawaz | Software Engineer</title>
+<meta name="description" content="Saiyed Saizan Shahnawaz. Computer Science at UW–Madison, graduating May 2028. I build AI systems, developer tools, and robotics software. Looking for Summer 2027 software engineering and AI internships.">
 <meta name="author" content="Saiyed Saizan Shahnawaz">
 <link rel="canonical" href="https://saiyedsaizan.github.io/">
 
 <meta property="og:type" content="profile">
-<meta property="og:title" content="Saiyed Saizan Shahnawaz — Software Engineer">
+<meta property="og:title" content="Saiyed Saizan Shahnawaz | Software Engineer">
 <meta property="og:description" content="Computer Science at UW–Madison. I build AI systems, developer tools, and robotics software. Looking for Summer 2027 internships.">
 <meta property="og:url" content="https://saiyedsaizan.github.io/">
 <meta name="twitter:card" content="summary">
@@ -39,7 +39,6 @@
     <span class="sp"></span>
     <nav aria-label="Primary">
       <a href="#projects">Projects</a>
-      <a href="writing/" class="hide-sm">Writing</a>
       <a href="Saiyed-Saizan-Shahnawaz-Resume.pdf">Résumé</a>
       <a href="https://github.com/SaiyedSaizan" class="hide-sm" rel="me noopener">GitHub</a>
       <button class="theme-btn" type="button" aria-label="Switch to dark theme">
@@ -55,6 +54,8 @@
 
   <!-- ============================================================== hero -->
   <section class="hero">
+   <div class="hero-inner">
+    <div class="hero-text">
     <h1>Saiyed Saizan Shahnawaz</h1>
     <p class="role">Software engineer. I build AI systems, developer tools, and robotics
       software.</p>
@@ -76,6 +77,14 @@
       <b>Currently exploring</b> agent systems, robot learning, physical AI, and system design.
       The thread through most of it: <span class="credo">systems you can check, not trust</span>.
     </p>
+    </div>
+
+    <figure class="portrait">
+      <img src="assets/img/saizan.webp" width="760" height="840"
+           alt="Saiyed Saizan Shahnawaz on Bascom Hill at dusk, with Bascom Hall lit behind him."
+           fetchpriority="high" decoding="async">
+    </figure>
+   </div>
   </section>
 
   <!-- =========================================================== projects -->
@@ -90,24 +99,17 @@
           <div class="proj-text">
             <p class="proj-idx">01</p>
             <h3><a class="stretch" href="projects/agent-governance-runtime.html">Agent Governance
-              Runtime<span class="vh"> — read the case study</span></a></h3>
+              Runtime<span class="vh">, read the case study</span></a></h3>
             <p class="proj-desc">Policy and audit layer for AI agents. It evaluates every tool call
               against deterministic policy before execution, and records each decision in a hash-linked
               log that an offline verifier can re-derive without trusting the runtime that wrote it.</p>
-            <p class="proj-note">The decision core has no LLM or network imports — a test reads the
+            <p class="proj-note">The decision core has no LLM or network imports. A test reads the
               source and fails the build if one appears. The case study has a working verifier you can
               tamper with.</p>
             <p class="proj-meta">TypeScript · Hono · SQLite · 217 tests</p>
             <p class="proj-more" aria-hidden="true">Read the case study →</p>
           </div>
 
-          <!-- No capture of the running gateway exists yet. Swapping this block
-               for a screenshot is a straight replacement:
-               <figure class="shot">
-                 <img src="assets/img/governance-console.webp" width="1500" height="900"
-                      alt="…" loading="lazy" decoding="async">
-                 <figcaption>…</figcaption>
-               </figure>                                                        -->
           <figure class="shot-pending proj-media">
             <svg viewBox="-1 0 232 60" role="img" aria-label="Diagram of a hash-linked audit chain in which the third record has been altered, breaking every link after it">
               <g class="fig-mono" font-size="7">
@@ -139,15 +141,15 @@
         <div class="proj-inner">
           <div class="proj-text">
             <p class="proj-idx">02</p>
-            <h3><a class="stretch" href="projects/flow.html">Flow — Campus
-              Assistant<span class="vh"> — read the case study</span></a></h3>
+            <h3><a class="stretch" href="projects/flow.html">Flow: Campus
+              Assistant<span class="vh">, read the case study</span></a></h3>
             <p class="proj-desc">A UW–Madison assistant, built with two others during a summer research
               lab. A tool-calling model decides what to look up; the answers come from exact SQL over a
               typed campus knowledge graph and live feeds, not from the model's memory. There is no
               vector database anywhere in it.</p>
             <p class="proj-note">I built the degree-audit PDF parser, the idempotent ingestion across
               eight campus data sources, and the refresh layer that keeps each source current at its own
-              cadence — ten minutes to weekly.</p>
+              cadence, from ten minutes to weekly.</p>
             <p class="proj-meta">Python · FastAPI · Postgres · Firestore · 58 tools</p>
             <p class="proj-more" aria-hidden="true">Read the case study →</p>
           </div>
@@ -166,8 +168,8 @@
         <div class="proj-inner">
           <div class="proj-text">
             <p class="proj-idx">03</p>
-            <h3><a class="stretch" href="projects/ai-watch.html">AI Watch — Watch-Aware
-              Tutor<span class="vh"> — read the case study</span></a></h3>
+            <h3><a class="stretch" href="projects/ai-watch.html">AI Watch: Watch-Aware
+              Tutor<span class="vh">, read the case study</span></a></h3>
             <p class="proj-desc">A Chrome extension that answers questions about the video you're
               watching and cites only the parts you have actually watched. Watched time is accumulated
               from a 250 ms sampler, and citations are re-checked against it server-side, so the model
@@ -194,13 +196,13 @@
           <div class="proj-text">
             <p class="proj-idx">04</p>
             <h3><a class="stretch" href="projects/physical-ai.html">Physical AI &amp; Robot
-              Learning<span class="vh"> — read the case study</span></a></h3>
+              Learning<span class="vh">, read the case study</span></a></h3>
             <p class="proj-desc">Hardware and simulation bring-up for a robot-learning setup: SO-101
               leader/follower arms, an Orbbec Astra 2 Pro depth camera, and Isaac Sim running in Docker
               on a remote DGX Spark.</p>
             <p class="proj-note">Motor-ID assignment, serial communication, controller configuration,
               teleoperation, and checking that depth frames were actually recorded rather than silently
-              dropped — the work that decides whether any of the learning is possible.</p>
+              dropped. That work decides whether any of the learning is possible.</p>
             <p class="proj-meta">Python · LeRobot · Isaac Sim · Orbbec SDK · Docker</p>
             <p class="proj-more" aria-hidden="true">Read the case study →</p>
           </div>
@@ -223,18 +225,18 @@
 
     <article class="entry">
       <div class="entry-head">
-        <h3>Summer Research Intern — UW–Madison Summer AI Lab</h3>
+        <h3>Summer Research Intern, UW–Madison Summer AI Lab</h3>
         <span class="entry-when">2026 · Madison, WI</span>
       </div>
       <p class="entry-sub">Flow, a privacy-first campus assistant · team of 3 · 3rd place, Entra AI Club Hackathon</p>
       <ul class="bullets">
         <li>Built a degree-audit parser that pulls completed courses, satisfied requirements and
-          remaining needs out of student-uploaded PDFs — rules and regular expressions over pdfplumber,
-          with no model in the extraction path.</li>
+          remaining needs out of student-uploaded PDFs, using rules and regular expressions over
+          pdfplumber with no model in the extraction path.</li>
         <li>Reduced retained source documents to zero: the extracted text is encrypted with Fernet
           before it reaches Firestore, and the uploaded PDF bytes are discarded.</li>
-        <li>Built idempotent ingestion across eight campus data sources — 880 menu items over 6 dining
-          halls, 1,100+ student organizations, 5,800+ course listings — using deterministic node IDs,
+        <li>Built idempotent ingestion across eight campus data sources (880 menu items over 6 dining
+          halls, 1,100+ student organizations, 5,800+ course listings) using deterministic node IDs,
           conflict-tolerant loaders and per-record savepoints.</li>
         <li>Kept each source current at its own cadence, from ten minutes to weekly, with freshness
           tests and serve-stale fallbacks so answers survive an upstream outage.</li>
@@ -246,8 +248,8 @@
 
     <article class="entry">
       <div class="entry-head">
-        <h3>Business Development Associate — Settelo Realty</h3>
-        <span class="entry-when">2024 – 2025 · India</span>
+        <h3>Business Development Associate, Settelo Realty</h3>
+        <span class="entry-when">2024–2025 · India</span>
       </div>
       <p class="entry-sub" style="margin:0">Managed digital campaigns and lead generation.</p>
     </article>
@@ -300,6 +302,7 @@
   <div class="w">
     <span>© <span id="year">2026</span> Saiyed Saizan Shahnawaz</span>
     <span class="sp"></span>
+    <a href="writing/">Writing</a>
     <a href="https://github.com/SaiyedSaizan">GitHub</a>
     <a href="https://linkedin.com/in/saiyed-saizan-shahnawaz">LinkedIn</a>
     <a href="mailto:shahnawaz@wisc.edu">Email</a>

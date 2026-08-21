@@ -3,11 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Physical AI &amp; Robot Learning — Saiyed Saizan Shahnawaz</title>
-<meta name="description" content="SO-101 leader/follower arms, an Orbbec Astra 2 Pro RGB-D camera, and Isaac Sim on a remote DGX Spark via Docker — bringing up the hardware and simulation stack for sim-to-real work.">
+<title>Physical AI &amp; Robot Learning | Saiyed Saizan Shahnawaz</title>
+<meta name="description" content="SO-101 leader/follower arms, an Orbbec Astra 2 Pro RGB-D camera, and Isaac Sim on a remote DGX Spark via Docker. Bringing up the hardware and simulation stack for sim-
+  to-real work.">
 <link rel="canonical" href="https://saiyedsaizan.github.io/projects/physical-ai.html">
 <meta property="og:title" content="Physical AI & Robot Learning">
-<meta property="og:description" content="Teleoperation, depth capture, and Isaac Sim on a remote DGX Spark — the unglamorous half of sim-to-real.">
+<meta property="og:description" content="Teleoperation, depth capture, and Isaac Sim on a remote DGX Spark: the bring-up half of
+  sim-to-real.">
 <meta name="theme-color" content="#f7f4ee" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#14120f" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f4ee'/%3E%3Ctext x='16' y='24' font-family='Georgia,serif' font-size='22' text-anchor='middle' fill='%23c9451f'%3ES%3C/text%3E%3C/svg%3E">
@@ -23,7 +25,6 @@
     <span class="sp"></span>
     <nav aria-label="Primary">
       <a href="../#projects">Projects</a>
-      <a href="../writing/" class="hide-sm">Writing</a>
       <a href="../Saiyed-Saizan-Shahnawaz-Resume.pdf">Résumé</a>
       <a href="https://github.com/SaiyedSaizan" class="hide-sm" rel="me noopener">GitHub</a>
       <button class="theme-btn" type="button" aria-label="Switch to dark theme">
@@ -55,16 +56,16 @@
       <img src="../assets/img/robot-arm.webp" width="1500" height="1013"
            alt="The bench: an SO-101 arm mounted at the edge of a desk with its gripper open above a whiteboard marker, an Orbbec depth camera on a tripod pointed at the workspace, and an orange bin beside it holding picked objects."
            loading="lazy" decoding="async">
-      <figcaption>The working bench — arm, depth camera on a tripod, and a pick-and-place task with
-        whiteboard markers and a bin.</figcaption>
+      <figcaption>The working bench: arm, depth camera on a tripod, and a pick-and-place task with
+      whiteboard markers and a bin.</figcaption>
     </figure>
 
     <h2>Bringing up the arms</h2>
     <p>A leader/follower pair is the simplest useful teleoperation setup: you move the leader arm by
       hand, the follower mirrors it, and the resulting joint trajectories become demonstration data.
       Simple to describe; a long list of small, unforgiving steps to actually stand up.</p>
-    <p>I assembled and calibrated both SO-101 arms and an Orbbec Astra 2 Pro RGB-D camera — motor-ID
-      assignment, serial communication, controller configuration, teleoperation testing, and validating
+    <p>I assembled and calibrated both SO-101 arms and an Orbbec Astra 2 Pro RGB-D camera: motor-ID assignment, serial communication, controller
+      configuration, teleoperation testing, and validating
       that depth recordings were actually being captured rather than silently dropping frames.</p>
 
     <figure class="wide">
@@ -101,19 +102,19 @@
             <path d="M400 68 V86" class="s-blue" stroke-width="1.4"/>
             <path d="M310 103 H352" class="s-blue" stroke-width="1.4"/>
 
-            <text x="0" y="146" class="f-ink3" font-size="8.5">the failure that costs you a session: depth frames dropping silently while RGB keeps recording —</text>
+            <text x="0" y="146" class="f-ink3" font-size="8.5">the failure that costs you a session: depth frames dropping silently while RGB keeps recording:</text>
             <text x="0" y="160" class="f-ink3" font-size="8.5">the dataset looks fine until you train on it, so validating capture is part of bring-up, not a formality</text>
           </g>
         </svg>
       </div>
-      <figcaption><b>Fig. 1</b> — Motor-ID assignment is the step that quietly decides whether anything
+      <figcaption><b>Fig. 1.</b> Motor-ID assignment is the step that quietly decides whether anything
         else works: every joint has to answer to a distinct address on a shared serial bus, and a
         duplicate shows up as a limb that moves when a different one is commanded.</figcaption>
     </figure>
 
     <h2>Simulation on borrowed hardware</h2>
-    <p>The other half was standing up Isaac Sim 6.0.1 on a remote DGX Spark through Docker, driven over
-      browser-based streaming — no local GPU, no display attached to the machine doing the rendering.
+    <p>The other half was standing up Isaac Sim 6.0.1 on a remote DGX Spark through Docker, driven over browser-based streaming, with no local GPU and no display attached to the machine doing
+      the rendering.
       I configured environments both with and without domain randomization for sim-to-real work.</p>
 
     <figure class="wide">
@@ -152,7 +153,7 @@
           </g>
         </svg>
       </div>
-      <figcaption><b>Fig. 2</b> — The conceptual argument for domain randomization, drawn against the
+      <figcaption><b>Fig. 2.</b> The conceptual argument for domain randomization, drawn against the
         setup I configured. It is not a claim about transfer results: no policy was trained to
         convergence and no sim-to-real gap was measured in this work.</figcaption>
     </figure>
@@ -161,10 +162,8 @@
     <p>This is infrastructure work, and I'd describe it that way rather than inflate it. What I can
       speak to is hardware bring-up, calibration, serial debugging, containerized deployment of a heavy
       simulator on a remote machine, and the specific ways depth capture fails quietly. What I did
-      <em>not</em> do here is train a policy, measure transfer, or publish a result — so those aren't
-      claims I'll make.</p>
+      <em>not</em> do here is train a policy, measure transfer, or publish a result, so those aren't claims I'll make.</p>
 
-    <!-- TODO: add episode count, and the calibration failure worth describing. -->
 
   </div>
 </div>
@@ -175,6 +174,7 @@
     <span>© <span id="year">2026</span> Saiyed Saizan Shahnawaz</span>
     <span class="sp"></span>
     <a href="../#projects">Projects</a>
+    <a href="../writing/">Writing</a>
     <a href="https://github.com/SaiyedSaizan">GitHub</a>
     <a href="mailto:shahnawaz@wisc.edu">Email</a>
   </div>

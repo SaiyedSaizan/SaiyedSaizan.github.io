@@ -1,5 +1,5 @@
 /* ==========================================================================
-   viz.js — interactive figures. Vanilla JS, no dependencies.
+   viz.js. Interactive figures. Vanilla JS, no dependencies.
    Every figure paints through CSS classes, so the theme toggle is free.
    ========================================================================== */
 (function () {
@@ -63,7 +63,7 @@ function sha256(msg) {
   return out;
 }
 
-/* Canonical JSON — sorts keys at every level, like the real canonical.ts.
+/* Canonical JSON. Sorts keys at every level, like the real canonical.ts.
    Two records with the same fields in a different order must hash the same. */
 function canonical(v) {
   if (v === null || typeof v !== "object") return JSON.stringify(v);
@@ -84,7 +84,7 @@ function el(name, attrs, text) {
 function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); }
 
 /* ==========================================================================
-   FIGURE 1 — the audit chain you can forge
+   FIGURE 1. The audit chain you can forge
    ========================================================================== */
 function initChain(root) {
   var svg  = root.querySelector("[data-chain-svg]");
@@ -114,7 +114,7 @@ function initChain(root) {
     });
   }
 
-  /* The verifier. Reads the log alone — it does not trust anything the
+  /* The verifier. Reads the log alone. It does not trust anything the
      runtime told it. Four ordered checks, first failure wins. */
   function verify() {
     var out = [], prev = GENESIS, broken = -1, reason = "";
@@ -137,7 +137,7 @@ function initChain(root) {
     svg.setAttribute("viewBox", "-2 0 " + (W+4) + " 152");
 
     svg.appendChild(el("text", { x: 0, y: 11, class: "fig-mono f-ink3", "font-size": 9.5,
-      "letter-spacing": ".9" }, "APPEND-ONLY AUDIT CHAIN — entry_hash = SHA-256( prev_hash + canonical(body) )"));
+      "letter-spacing": ".9" }, "APPEND-ONLY AUDIT CHAIN · entry_hash = SHA-256( prev_hash + canonical(body) )"));
 
     v.rows.forEach(function (row, i) {
       var r = recs[i], x = i * (BW + GAP), bad = !row.ok;
@@ -174,12 +174,12 @@ function initChain(root) {
     });
 
     var msg = v.broken < 0
-      ? "✓ chain intact — all " + recs.length + " records re-derive from genesis"
-      : "✕ chain invalid at seq " + v.broken + " — " + v.reason;
+      ? "✓ chain intact · all " + recs.length + " records re-derive from genesis"
+      : "✕ chain invalid at seq " + v.broken + " · " + v.reason;
     svg.appendChild(el("text", { x: 0, y: 112, class: "fig-mono " + (v.broken < 0 ? "f-blue" : "f-acc"),
       "font-size": 10.5, "font-weight": 600 }, msg));
     svg.appendChild(el("text", { x: 0, y: 130, class: "fig-mono f-ink3", "font-size": 9 },
-      "the verifier reads the log alone — no runtime state, no network, nothing taken on trust"));
+      "the verifier reads the log alone · no runtime state, no network, nothing taken on trust"));
   }
 
   function line(cls, txt) { return '<span class="' + cls + '">' + txt + "</span>"; }
@@ -230,7 +230,7 @@ function initChain(root) {
 }
 
 /* ==========================================================================
-   FIGURE 2 — 40 concurrent writers, one contiguous chain
+   FIGURE 2. Forty concurrent writers, one contiguous chain
    ========================================================================== */
 function initRace(root) {
   var svg = root.querySelector("[data-race-svg]");
@@ -264,7 +264,7 @@ function initRace(root) {
     var slots = 20, done = Math.round(t * slots);
     for (var j = 0; j < slots; j++) {
       var x = 130 + j * 24, filled = j < done;
-      /* Unguarded, two writers occasionally claim the same seq — the fork. */
+      /* Unguarded, two writers occasionally claim the same seq: the fork. */
       var dup = !guarded && filled && (j === 6 || j === 13);
       svg.appendChild(el("rect", { x: x, y: 68, width: 19, height: 22, "stroke-width": 1,
         class: !filled ? "f-none s-rule2 dash" : dup ? "f-accbg s-acc" : "f-bluebg s-blue" }));
@@ -330,7 +330,7 @@ function initRace(root) {
 }
 
 /* ==========================================================================
-   FIGURE 3 — the cross-video race (AI Watch)
+   FIGURE 3. The cross-video race (AI Watch)
    ========================================================================== */
 function initAwait(root) {
   var svg = root.querySelector("[data-await-svg]");
@@ -394,13 +394,13 @@ function initAwait(root) {
     svg.appendChild(el("text", { x: nx + 5, y: 20, class: "fig-mono f-acc", "font-size": 8.5 }, "SPA navigation"));
 
     var msg, cls;
-    if (step < NAV + 1) { msg = "in flight — same video, nothing to detect yet"; cls = "f-ink3"; }
-    else if (guarded)   { msg = "✓ identity re-checked after the await → request aborted, no answer sent"; cls = "f-blue"; }
+    if (step < NAV + 1) { msg = "in flight, same video, nothing to detect yet"; cls = "f-ink3"; }
+    else if (guarded)   { msg = "✓ identity re-checked after the await, request aborted, no answer sent"; cls = "f-blue"; }
     else                { msg = "✕ video A's transcript answers video B's question"; cls = "f-acc"; }
     svg.appendChild(el("text", { x: 0, y: 152, class: "fig-mono " + cls, "font-size": 9.5, "font-weight": 600 }, msg));
 
     if (note) note.textContent = guarded
-      ? "Tab URL, videoId and sessionId are re-read after every await; storage — not worker memory — is the source of truth."
+      ? "Tab URL, videoId and sessionId are re-read after every await; storage, not worker memory, is the source of truth."
       : "The worker keeps the identity it captured before the first await. Every later boundary is a window for the page to change underneath it.";
 
     root.querySelectorAll("[data-await-act]").forEach(function (x) {

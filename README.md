@@ -1,7 +1,7 @@
 # saiyedsaizan.github.io
 
-Personal site. Plain HTML, CSS and JavaScript — **no build step, no dependencies, no npm install**.
-Edit a file, push, it's live.
+Personal site. Plain HTML, CSS and JavaScript. **No build step, no dependencies, no npm install.**
+Edit a file, push, and it is live.
 
 Live at <https://saiyedsaizan.github.io>.
 
@@ -41,19 +41,19 @@ projects/
   ai-watch.html
   physical-ai.html
 writing/
-  index.html                   post list — currently an empty state
+  index.html                   notes page (off the primary nav until a post ships)
   _template.html               copy this to start a post
 assets/
   style.css                    all styling, both themes, one file
   main.js                      theme toggle + footer year
   viz.js                       the interactive figures
-  img/                         project screenshots (WebP)
+  img/                         portrait + project screenshots (WebP)
   fonts/                       Instrument Serif (SIL Open Font Licence)
 Saiyed-Saizan-Shahnawaz-Resume.pdf
 404.html · robots.txt · sitemap.xml · .nojekyll
 ```
 
-`.nojekyll` matters — it stops GitHub running the files through Jekyll, which would ignore anything
+`.nojekyll` matters. It stops GitHub running the files through Jekyll, which would ignore anything
 starting with an underscore (including `writing/_template.html`).
 
 ---
@@ -62,7 +62,7 @@ starting with an underscore (including `writing/_template.html`).
 
 Worth knowing before you edit, because breaking them is how it starts looking generic.
 
-1. **Monospace only for real technical metadata** — stacks, figure labels, code, terminal output.
+1. **Monospace only for real technical metadata:** stacks, figure labels, code, terminal output.
    Not for section headings, dates, or eyebrow labels.
 2. **The accent does one job at a time.** If two things on a screen are orange, one of them is wrong.
 3. **Evidence over decoration.** A real screenshot beats a diagram; a diagram beats an icon. If
@@ -76,7 +76,7 @@ Everything is in the `:root` block at the top of `assets/style.css`, with the da
 
 Both palettes were checked against a contrast and colour-blindness validator:
 
-- Figures use **red and blue**, never red and green — red/green fails protanopia separation at
+- Figures use **red and blue**, never red and green. Red/green fails protanopia separation at
   ΔE 5.7, which would make a broken record indistinguishable from a valid one.
 - `--accent` (#c9451f) is only 4.4:1 on the paper, so it's used for **fills, marks and borders**.
   Text that needs to be orange uses `--accent-2` (#9c3416, 6.6:1).
@@ -104,22 +104,7 @@ Light UI screenshots are dimmed slightly in dark mode via `--shot-filter` so the
 
 1. `cp writing/_template.html writing/your-slug.html`
 2. Replace every `{{ ... }}` placeholder
-3. In `writing/index.html`, delete the `.empty` block, uncomment the `<ul class="posts">` list, add
-   your row
+3. In `writing/index.html`, add a `<ul class="posts">` list with your row
 4. Add the URL to `sitemap.xml`
+5. Re-add `<a href="writing/">Writing</a>` to the primary nav in every page's header
 
----
-
-## Open items
-
-Left in the pages as HTML comments so visitors never see them. Search for `PRIVATE NOTE` and
-`TODO:` and delete each once handled.
-
-- **Agent Governance Runtime has no real screenshot.** It's the only project still using a diagram
-  on the homepage. Captures of the approvals console and the `audit-verify` CLI output would fill
-  the slot; the HTML has a commented-out `<figure class="shot">` showing exactly what to drop in.
-- **Repository links** on the Agent Governance Runtime and AI Watch pages.
-- **Physical AI** — episode count, and the calibration failure worth writing up.
-- **Optional: a link-preview image.** Nothing references one, so nothing is broken. For a rich card
-  when the link is shared, add a 1200×630 `assets/img/og.png` and point `<meta property="og:image">`
-  at it in each page's `<head>`.
