@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="g" cx="70%" cy="42%" r="60%">
+      <stop offset="0" stop-color="#16352d"/>
+      <stop offset="1" stop-color="#070908"/>
+    </radialGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#26302b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <rect width="1200" height="630" fill="url(#grid)" opacity=".5"/>
+  <circle cx="946" cy="304" r="134" fill="none" stroke="#67e8f9" stroke-width="2" opacity=".35"/>
+  <circle cx="946" cy="304" r="84" fill="none" stroke="#b9ff66" stroke-width="2" opacity=".65"/>
+  <circle cx="946" cy="304" r="12" fill="#b9ff66"/>
+  <path d="M812 304H716M1080 304h76M946 170V92M946 438v98" stroke="#67e8f9" stroke-width="2" opacity=".6"/>
+  <text x="80" y="92" fill="#9ba7a0" font-family="monospace" font-size="22">AI SYSTEMS / PRODUCT ENGINEERING</text>
+  <text x="80" y="250" fill="#f3f7f4" font-family="Arial, sans-serif" font-weight="700" font-size="72">Saiyed Saizan</text>
+  <text x="80" y="328" fill="#f3f7f4" font-family="Arial, sans-serif" font-weight="700" font-size="72">Shahnawaz</text>
+  <text x="80" y="425" fill="#b9ff66" font-family="Arial, sans-serif" font-size="31">Reasoning → reliable action.</text>
+  <text x="80" y="542" fill="#9ba7a0" font-family="monospace" font-size="20">UW–MADISON · FLOW · AGENTIC SYSTEMS</text>
+</svg>

@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flow: Campus Assistant | Saiyed Saizan Shahnawaz</title>
+<meta name="description" content="A UW–Madison assistant where the model narrates but never decides. Retrieval is exact SQL over a typed campus knowledge graph, with no vector database. FastAPI, Postgres, Firestore, 58 tools.">
+<link rel="canonical" href="https://saiyedsaizan.github.io/projects/flow.html">
+<meta property="og:title" content="Flow: Campus Assistant">
+<meta property="og:description" content="The model narrates but never decides. Exact SQL over a typed campus graph, no vector database.">
+<meta name="theme-color" content="#f7f4ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14120f" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f4ee'/%3E%3Ctext x='16' y='24' font-family='Georgia,serif' font-size='22' text-anchor='middle' fill='%23c9451f'%3ES%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../assets/style.css">
+<script>try{var t=localStorage.getItem("theme");if(t==="dark"||(!t&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="mast">
+  <div class="w">
+    <a class="nm" href="../">Saiyed Saizan Shahnawaz</a>
+    <span class="sp"></span>
+    <nav aria-label="Primary">
+      <a href="../#work">Projects</a>
+      <a href="../Saiyed-Saizan-Shahnawaz-Resume.pdf">Résumé</a>
+      <a href="https://github.com/SaiyedSaizan" class="hide-sm" rel="me noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="w-read">
+
+  <div class="page-head">
+    <a class="back" href="../#work">← Projects</a>
+    <h1>Flow: Campus Assistant</h1>
+    <p class="dek">A campus assistant where the model chooses what to look up but never decides the
+      answer. Retrieval is exact SQL over a typed knowledge graph. There is no vector database in it.</p>
+    <div class="kv">
+      <span>Year <b>2026</b></span>
+      <span>Role <b>Summer Research Intern, UW–Madison Summer AI Lab · team of 3</b></span>
+      <span>Stack <b>Python · FastAPI · Postgres · Firestore</b></span>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span class="n">58</span><span class="l">tools, 11 packs</span></div>
+    <div class="stat"><span class="n">0</span><span class="l">vector databases</span></div>
+    <div class="stat"><span class="n">5,800+</span><span class="l">course listings</span></div>
+    <div class="stat"><span class="n">1,100+</span><span class="l">student orgs</span></div>
+  </div>
+
+  <div class="prose">
+
+    <h2>The thesis</h2>
+    <p>Flow is a UW–Madison assistant delivered as a web app and a CLI, both driven by one tool-calling
+      LLM over a campus knowledge graph. It answers questions about student organizations, events, the
+      course catalog with real historical grade distributions, dining menus, building hours, and live
+      library and gym busyness.</p>
+    <p>The design commitment is narrow and load-bearing: <strong>the model narrates, it never
+      decides.</strong> It chooses which tool to call; the tools read from a typed Postgres property
+      graph, live HTTP feeds, and per-user Firestore documents. The answer is written from those
+      results. When a lookup returns nothing the instruction is to say so rather than fill the gap.</p>
+
+    <div class="pull">There is no vector database anywhere in the system. Retrieval is exact SQL over a typed graph, which is why answers can cite real records.</div>
+
+    <figure class="evidence evidence-narrow">
+      <img src="../assets/img/flow-grades.webp" width="760" height="1447"
+           alt="Flow answering the question &quot;what is Econ102 Grade Distribution&quot;. It returns a per-letter breakdown with student counts, states an average GPA of 3.25 across 1,880 students, and renders a bar chart of the letter-grade distribution over the last three terms."
+           loading="lazy" decoding="async">
+      <figcaption>Every number here came out of a SQL query, including the chart. The model wrote the
+        sentence around them.</figcaption>
+    </figure>
+
+    <p>That's an unfashionable choice and I think it's the right one for this problem. Campus data is
+      structured: a course has a number, a dining hall has serving periods, a building has hours.
+      Embedding all of that into a similarity search throws away the structure and buys fuzziness you
+      then have to defend against. Nodes and typed edges, with twenty-five edge predicates and direct edges carrying full confidence
+        while inferred ones carry less, keep the structure and make the retrieval step auditable.</p>
+
+    <h2>Where the model is allowed to act</h2>
+    <p>Being precise about this is the whole point, so here is the actual split rather than a
+      marketing version of it.</p>
+
+    <figure class="wide">
+      <div class="fig-top">
+        <svg viewBox="0 0 560 232" role="img" aria-label="Which parts of the pipeline are handled by the language model and which are deterministic code">
+          <g class="fig-mono" font-size="9.5">
+            <text x="0" y="10" class="f-ink3" letter-spacing=".9">ONE TURN · WHO DOES WHAT</text>
+
+            <rect x="0"   y="22" width="270" height="20" class="f-accbg s-acc" stroke-width="1"/>
+            <text x="8"   y="36" class="f-acc" font-weight="700">LANGUAGE MODEL</text>
+            <rect x="290" y="22" width="270" height="20" class="f-bluebg s-blue" stroke-width="1"/>
+            <text x="298" y="36" class="f-blue" font-weight="700">DETERMINISTIC CODE</text>
+
+            <g class="f-ink2">
+              <text x="8" y="62">pick a tool from 58 schemas</text>
+              <text x="8" y="82">write the prose from tool results</text>
+              <text x="8" y="102">read a schedule screenshot</text>
+              <text x="8" y="122">distil a nightly preference profile</text>
+
+              <text x="298" y="62">SQL over the knowledge graph</text>
+              <text x="298" y="82">live feeds · per-user Firestore reads</text>
+              <text x="298" y="102">which packs to route to (keyword)</text>
+              <text x="298" y="122">prerequisite &amp; eligibility logic</text>
+              <text x="298" y="142">plan validation, re-derived from scratch</text>
+              <text x="298" y="162">dining openness from serving periods</text>
+              <text x="298" y="182">prompt-injection sanitise and scan</text>
+              <text x="298" y="202">server re-validates the screenshot import</text>
+            </g>
+
+            <line x1="280" y1="22" x2="280" y2="216" class="s-rule"/>
+            <text x="0" y="222" class="f-ink3" font-size="9">the model never reads the database and never decides eligibility</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption><b>Fig. 1.</b> Eligibility and prerequisites are computed by pure Python with
+        three-valued logic: an unparsed requisite, a consent requirement, or a program restriction
+        resolves to <em>unknown</em>, never to a yes or a no. An assistant that guesses about your
+        degree is worse than one that admits it doesn't know.</figcaption>
+    </figure>
+
+    <figure class="evidence">
+      <img src="../assets/img/flow-advising.webp" width="1100" height="1345"
+           alt="Flow answering a request for a social science course related to business and entrepreneurship. It marks which requirements each candidate course does and does not satisfy, notes that eligibility could not be fully verified because a clause was unparsed, and flags an honest caveat about a breadth requirement."
+           loading="lazy" decoding="async">
+      <figcaption>The hedging is the point. It says which requirement a course does <em>not</em>
+        satisfy, and where a requisite clause couldn't be parsed it says so rather than resolving it
+        to a yes.</figcaption>
+    </figure>
+
+    <h2>Keeping it current without lying about freshness</h2>
+    <p>Campus data decays at wildly different rates. Grade history from past semesters is stable
+      forever; how busy College Library is right now is stale in minutes. Treating those the same way
+      is how an assistant ends up confidently wrong.</p>
+
+    <figure class="wide">
+      <div class="fig-top">
+        <svg viewBox="0 0 580 178" role="img" aria-label="Refresh cadence of six scheduled data sources, from ten minutes to weekly, on a log scale">
+          <g class="fig-mono" font-size="9">
+            <text x="0" y="10" class="f-ink3" letter-spacing=".9">SCHEDULED REFRESH · LOG SCALE</text>
+
+            <g class="s-rule">
+              <line x1="40"  y1="18" x2="40"  y2="140"/>
+              <line x1="175" y1="18" x2="175" y2="140"/>
+              <line x1="414" y1="18" x2="414" y2="140"/>
+              <line x1="560" y1="18" x2="560" y2="140"/>
+            </g>
+            <g class="f-ink3" font-size="8.5" text-anchor="middle">
+              <text x="40"  y="154">10 min</text>
+              <text x="175" y="154">1 hour</text>
+              <text x="414" y="154">1 day</text>
+              <text x="556" y="154">1 week</text>
+            </g>
+
+            <g font-size="8.5" class="f-ink2">
+              <text x="0" y="30">live busyness</text>
+              <text x="0" y="50">canvas due dates</text>
+              <text x="0" y="70">dining menus</text>
+              <text x="0" y="90">building hours</text>
+              <text x="0" y="110">preference profile</text>
+              <text x="0" y="130">degree requirements</text>
+            </g>
+
+            <rect x="112" y="24" width="20"  height="7" rx="3.5" class="f-seq1"/>
+            <rect x="112" y="44" width="83"  height="7" rx="3.5" class="f-seq2"/>
+            <rect x="112" y="64" width="198" height="7" rx="3.5" class="f-seq3"/>
+            <rect x="112" y="84" width="302" height="7" rx="3.5" class="f-seq4"/>
+            <rect x="112" y="104" width="302" height="7" rx="3.5" class="f-seq5"/>
+            <rect x="112" y="124" width="448" height="7" rx="3.5" class="f-seq6"/>
+
+            <g class="f-ink3" font-size="8">
+              <text x="138" y="31">10m</text>
+              <text x="201" y="51">30m</text>
+              <text x="316" y="71">6h</text>
+              <text x="420" y="91">daily 05:10</text>
+              <text x="420" y="111">nightly 03:40</text>
+              <text x="466" y="144">weekly</text>
+            </g>
+
+            <text x="0" y="172" class="f-ink3" font-size="8.5">orgs · events · course catalogue are crawled snapshots, re-run by hand and labelled as snapshots</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption><b>Fig. 2.</b> Each cadence is a scheduled job with a freshness test attached. Dining
+        trips a failure if the feed is more than twelve hours stale; building hours fail a test after
+        eight days and are surfaced hedged, "as of &lt;date&gt;". When a live feed is unreachable the
+        answer degrades to <code>live_unavailable</code> rather than crashing or, worse, silently
+        serving yesterday's number as today's.</figcaption>
+    </figure>
+
+    <p>Ingestion is idempotent by construction: deterministic node IDs, conflict-tolerant loaders, and a
+      savepoint per record so one malformed row can't take down a run. Re-running a crawl converges
+      rather than duplicating. Canvas syncs never let an empty feed clobber a populated cache, because
+      "the API returned nothing this minute" and "you have no assignments" are different facts.</p>
+
+    <h2>The privacy path</h2>
+    <p>My main piece of this was the degree-audit parser. A student uploads a DARS PDF; we extract
+      completed courses, satisfied requirements, and what's still outstanding, deterministically, using rules and regular expressions over
+        <code>pdfplumber</code> with no model in the extraction path, and then we throw the document
+        away.</p>
+
+    <figure class="wide">
+      <div class="fig-top">
+        <svg viewBox="0 0 560 150" role="img" aria-label="Degree audit PDF is parsed, the extracted text encrypted and stored, and the original bytes discarded">
+          <g class="fig-mono" font-size="9">
+            <text x="0" y="10" class="f-ink3" letter-spacing=".9">DARS UPLOAD · WHAT SURVIVES</text>
+
+            <rect x="0"   y="26" width="96" height="38" class="f-surf s-rule2" stroke-width="1.2"/>
+            <text x="48"  y="42" text-anchor="middle" class="f-ink2">uploaded</text>
+            <text x="48"  y="55" text-anchor="middle" class="f-ink2">PDF</text>
+
+            <path d="M96 45 h34" class="s-blue" stroke-width="1.4"/>
+            <rect x="130" y="26" width="110" height="38" class="f-bluebg s-blue" stroke-width="1.2"/>
+            <text x="185" y="42" text-anchor="middle" class="f-blue">pdfplumber</text>
+            <text x="185" y="55" text-anchor="middle" class="f-blue">rules + regex</text>
+
+            <path d="M240 45 h34" class="s-blue" stroke-width="1.4"/>
+            <rect x="274" y="26" width="110" height="38" class="f-bluebg s-blue" stroke-width="1.2"/>
+            <text x="329" y="42" text-anchor="middle" class="f-blue">Fernet</text>
+            <text x="329" y="55" text-anchor="middle" class="f-blue">encrypt</text>
+
+            <path d="M384 45 h34" class="s-blue" stroke-width="1.4"/>
+            <rect x="418" y="26" width="110" height="38" class="f-bluebg s-blue" stroke-width="1.2"/>
+            <text x="473" y="42" text-anchor="middle" class="f-blue">Firestore</text>
+            <text x="473" y="55" text-anchor="middle" class="f-blue">per-user scope</text>
+
+            <path d="M48 64 V96" class="s-acc dash" stroke-width="1.4"/>
+            <rect x="0" y="96" width="150" height="30" class="f-accbg s-acc" stroke-width="1.2"/>
+            <text x="75" y="115" text-anchor="middle" class="f-acc" font-weight="700">bytes discarded</text>
+
+            <text x="166" y="108" class="f-ink3" font-size="8.5">nothing to leak, subpoena, or misplace later:</text>
+            <text x="166" y="120" class="f-ink3" font-size="8.5">the safest document is the one you didn't keep</text>
+
+            <text x="0" y="146" class="f-ink3" font-size="8.5">re-upload nudge after 180 days · separate encryption keys for DARS text and Canvas credentials</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption><b>Fig. 3.</b> Two encryption keys rather than one, split by blast radius: the Canvas
+        credential is decrypted only inside the Canvas service and never returned to a tool or a
+        client; the DARS text layer is decrypted only in the import and provenance endpoints. Raw
+        Canvas tokens never reach the model. Secrets are injected by systemd from outside the
+        repository, and the service refuses to start if one is found in an environment file.</figcaption>
+    </figure>
+
+    <p>A staleness check nudges for a fresh upload after 180 days, because a degree audit from three
+      semesters ago is a confidently wrong answer waiting to happen.</p>
+
+    <figure class="evidence">
+      <img src="../assets/img/flow-instructors.webp" width="1200" height="909"
+           alt="Flow comparing instructors and sections for GEN BUS 311. It reports that a single instructor teaches all sections, lists the lecture and discussion sections, and gives historical grade context including that instructor's average GPA against the course's other instructors."
+           loading="lazy" decoding="async">
+      <figcaption>Asked to compare instructors, it answers that there is only one, then gives the historical context anyway. Finding nothing is a valid answer.</figcaption>
+    </figure>
+
+    <h2>What I'd tell you in an interview</h2>
+    <p>This is a team project, three of us, and it's deployed as a hardened service behind a TLS edge with scheduled data jobs and a golden-eval regression gate. It ran a live public demo with
+      roughly a thousand logged chat turns across June and July. Things I would not claim:</p>
+    <ul>
+      <li><strong>General chat has no automated answer-verifier.</strong> Grounding there is architectural: tool-only data, pre-hedged tool summaries, an instruction never to
+        fabricate. But no program diffs the model's prose against the retrieved evidence. Real verification exists
+        only in the academic and planning cluster, where a formal validator re-derives constraints from
+        scratch and distrusts the solver. I'd rather say that precisely than let "verification layer"
+        do work it hasn't earned.</li>
+      <li><strong>The newest academic features are flag-gated and off by default.</strong> The advisor
+        harness, auto-planner, degree-wide requirements, and the DARS upload wizard are implemented and
+        tested, but they are not the default experience.</li>
+      <li><strong>There are no usage or accuracy metrics.</strong> The demo logs show it was used; they
+        cannot separate students from our own testing, so "used" is as far as I'll take it.</li>
+      <li><strong>It runs on a single uvicorn worker</strong> as a hard invariant. Fine at this scale;
+        multi-worker would need shared state, and that's a real conversation rather than a footnote.</li>
+      <li><strong>Building hours cover four pilot buildings</strong>, not campus.</li>
+    </ul>
+
+
+
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="w">
+    <span>© <span id="year">2026</span> Saiyed Saizan Shahnawaz</span>
+    <span class="sp"></span>
+    <a href="../#work">Projects</a>
+    <a href="https://github.com/SaiyedSaizan">GitHub</a>
+    <a href="mailto:shahnawaz@wisc.edu">Email</a>
+  </div>
+</footer>
+
+<script src="../assets/main.js"></script>
+</body>
+</html>

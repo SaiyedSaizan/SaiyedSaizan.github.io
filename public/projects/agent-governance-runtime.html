@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Governance Runtime | Saiyed Saizan Shahnawaz</title>
+<meta name="description" content="A policy-enforcement runtime that gates agent tool calls, with a tamper-evident audit log an offline verifier re-derives without trusting the runtime that wrote it. TypeScript, Hono, SQLite, 217 tests.">
+<link rel="canonical" href="https://saiyedsaizan.github.io/projects/agent-governance-runtime.html">
+<meta property="og:title" content="Agent Governance Runtime">
+<meta property="og:description" content="Policy enforcement over agent tool calls, with an audit log you can verify without trusting the runtime that wrote it.">
+<meta name="theme-color" content="#f7f4ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14120f" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f4ee'/%3E%3Ctext x='16' y='24' font-family='Georgia,serif' font-size='22' text-anchor='middle' fill='%23c9451f'%3ES%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../assets/style.css">
+<script>try{var t=localStorage.getItem("theme");if(t==="dark"||(!t&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="mast">
+  <div class="w">
+    <a class="nm" href="../">Saiyed Saizan Shahnawaz</a>
+    <span class="sp"></span>
+    <nav aria-label="Primary">
+      <a href="../#work">Projects</a>
+      <a href="../Saiyed-Saizan-Shahnawaz-Resume.pdf">Résumé</a>
+      <a href="https://github.com/SaiyedSaizan" class="hide-sm" rel="me noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="w-read">
+
+  <div class="page-head">
+    <a class="back" href="../#work">← Projects</a>
+    <h1>Agent Governance Runtime</h1>
+    <p class="dek">A policy and audit layer for AI agents. It evaluates each tool call against
+      deterministic policy before the call runs, and records the decision so it can be re-checked later
+      without trusting the runtime that recorded it.</p>
+    <div class="kv">
+      <span>Year <b>2026</b></span>
+      <span>Stack <b>TypeScript · Hono · SQLite · Node.js</b></span>
+      <span>Surface <b>18 routes · 12 tables</b></span>
+      <span>Tests <b>217</b></span>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span class="n">217</span><span class="l">tests</span></div>
+    <div class="stat"><span class="n">15</span><span class="l">forgery tests</span></div>
+    <div class="stat"><span class="n">7</span><span class="l">acyclic modules</span></div>
+    <div class="stat"><span class="n">0</span><span class="l">LLM or network imports</span></div>
+  </div>
+
+  <div class="prose">
+
+    <h2>The problem</h2>
+    <p>An agent that can call tools is an agent that can do damage. The common answer is a prompt
+      asking it nicely. That isn't enforcement. It's a suggestion, evaluated by the same nondeterministic process you were
+        trying to constrain.</p>
+    <p>So the decision about whether a call is permitted has to live <strong>outside</strong> the
+      model, in code that is deterministic, separately testable, and auditable after the fact. The
+      agent in this system holds no backend credentials at all; it asks the gateway, and the gateway
+      decides. There is no secret-handling code in the repository because there are no secrets for the agent to hold. That absence is the design.</p>
+
+    <p>The harder half is the record. An audit log is only worth something if it still means
+      something to someone who doesn't trust the process that produced it, including someone who has write access to the database.</p>
+
+    <h2>Try it: forge a record and watch the chain break</h2>
+    <p>Every decision is appended to a log where each record commits to the hash of the one before
+      it: <code>entry_hash = SHA-256(prev_hash + canonical(body))</code>. The verifier below re-derives
+      the whole chain from the log alone. It's the real algorithm running in your browser on real SHA-256. Not a video, not a mock.</p>
+
+    <figure class="wide" data-viz="chain">
+      <div class="fig-top"><svg data-chain-svg role="img" aria-label="Interactive audit chain: five records, showing where verification fails"></svg></div>
+      <div class="ctrls">
+        <button class="ctrl" type="button" data-chain-act="tamper" aria-pressed="false">Edit record #2's amount</button>
+        <button class="ctrl" type="button" data-chain-act="reseal" aria-pressed="false">Edit it and re-hash</button>
+        <button class="ctrl" type="button" data-chain-act="restore">Restore</button>
+      </div>
+      <div class="term" data-chain-term role="status" aria-live="polite"></div>
+      <figcaption><b>Fig. 1.</b> Two attacks worth comparing. <em>Edit the amount</em> and the record no
+        longer hashes to its own stored digest. So the attacker re-hashes it, and the break simply moves one record to the right, because <em>seq 3</em> still commits to the digest the record
+        used to have. To hide the edit you would have to re-seal every record after it, which is
+        exactly what the chain is for. Fifteen adversarial tests build forgeries a naive verifier
+        would accept.</figcaption>
+    </figure>
+
+    <h3>What the verifier actually checks</h3>
+    <p>Four checks, in a fixed order, returning the first broken sequence number and why:</p>
+    <ul>
+      <li><strong>Sequence equals index.</strong> Catches reordering and deletion from the middle, since a gap can't be papered over by renumbering.</li>
+      <li><strong>Linkage.</strong> Each record's stored <code>prev_hash</code> equals the previous
+        record's computed digest.</li>
+      <li><strong>Hash-version monotonicity.</strong> A v1 record appearing after v2 began is invalid.
+        Without this, an attacker downgrades a record to the older, narrower field projection and
+        smuggles fields past the hash.</li>
+      <li><strong>Hash equality.</strong> The body re-hashes to the stored digest.</li>
+    </ul>
+    <p>That third check exists because the log survived a schema migration. Two field projections share one chain, 11 hashed fields in v1 and 26 in v2, so historical records
+      stay byte-identical
+      while newer ones seal fifteen more fields. Which projection applies is resolved from an explicit
+      version field rather than inferred from which keys happen to be present; an unknown value throws
+      rather than guessing. Database triggers <code>RAISE(ABORT)</code> on any write that would
+      backfill a legacy row, because backfilling would invalidate every historical hash.</p>
+
+    <div class="pull">Canonical JSON isn't a formatting preference. If two identical records can
+      serialize differently, the hash means nothing.</div>
+
+    <p>Keys sort at every level; arrays keep order; <code>undefined</code>, functions and symbols throw
+      instead of being silently dropped; non-finite numbers are rejected; bigints serialize losslessly.
+      There are three separate canonicalizers in the codebase. Audit, policy and authority each have their
+      own, deliberately import-free, so the audit core's purity doesn't depend on the policy
+      module staying pure. That's duplication I chose on purpose, and I expect to be asked about it.</p>
+
+    <h2>Why the decision core has no imports</h2>
+    <p>The part that decides is seven modules with an acyclic dependency graph. <code>policy</code> and <code>authority</code> are pure, importing nothing beyond themselves and
+      <code>node:crypto</code>.
+      <code>audit</code> imports both, because verification means replaying them.</p>
+
+    <figure class="wide">
+      <div class="fig-top">
+        <svg viewBox="0 0 500 200" role="img" aria-label="Seven modules in an acyclic dependency graph, with policy and authority pure">
+          <defs>
+            <marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+              <path d="M0 0 L6 3 L0 6 z" class="f-ink3"/>
+            </marker>
+          </defs>
+          <g class="fig-mono" font-size="10.5">
+            <text x="0" y="9" font-size="9.5" class="f-ink3" letter-spacing=".9">DECISION CORE · 7 MODULES · ACYCLIC</text>
+
+            <g class="s-ink3" stroke-width="1.1" fill="none" marker-end="url(#ar)" opacity=".75">
+              <path d="M62 48 L118 74"/>
+              <path d="M188 48 L152 74"/>
+              <path d="M330 48 L330 72"/>
+              <path d="M132 106 L182 132"/>
+              <path d="M310 106 L248 132"/>
+              <path d="M250 147 L288 147"/>
+            </g>
+
+            <rect x="12"  y="20" width="100" height="28" class="f-bluebg s-blue" stroke-width="1.2"/>
+            <rect x="142" y="20" width="100" height="28" class="f-bluebg s-blue" stroke-width="1.2"/>
+            <rect x="280" y="20" width="100" height="28" class="f-surf s-rule2" stroke-width="1.2"/>
+            <rect x="82"  y="78" width="100" height="28" class="f-bluebg s-blue" stroke-width="1.2"/>
+            <rect x="280" y="78" width="100" height="28" class="f-surf s-rule2" stroke-width="1.2"/>
+            <rect x="150" y="134" width="100" height="28" class="f-surf s-rule2" stroke-width="1.2"/>
+            <rect x="290" y="134" width="100" height="28" class="f-surf s-rule2" stroke-width="1.2"/>
+
+            <text x="62"  y="38"  text-anchor="middle" class="f-blue">policy</text>
+            <text x="192" y="38"  text-anchor="middle" class="f-blue">authority</text>
+            <text x="330" y="38"  text-anchor="middle" class="f-ink2">db</text>
+            <text x="132" y="96"  text-anchor="middle" class="f-blue">audit</text>
+            <text x="330" y="96"  text-anchor="middle" class="f-ink2">backend</text>
+            <text x="200" y="152" text-anchor="middle" class="f-ink2">gateway</text>
+            <text x="340" y="152" text-anchor="middle" class="f-ink2">cli</text>
+
+            <rect x="12" y="128" width="118" height="40" class="f-none s-blue" stroke-width="1.2"/>
+            <text x="71" y="145" text-anchor="middle" font-size="9.5" class="f-blue" font-weight="700">0 forbidden</text>
+            <text x="71" y="158" text-anchor="middle" font-size="9.5" class="f-blue" font-weight="700">imports</text>
+
+            <text x="0" y="192" font-size="9" class="f-ink3">blue = pure · a test reads the source and fails the build if an import appears</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption><b>Fig. 2.</b> Purity isn't a convention someone has to remember. Tests scan every
+        file under <code>src/policy/</code> and <code>src/backend/</code> for forbidden module specifiers (<code>anthropic</code>, <code>openai</code>,
+          <code>langchain</code>, <code>node:http</code>, <code>node:net</code>) and for
+          <code>fetch(</code> and <code>XMLHttpRequest</code>. "No LLM in the decision path" is enforced mechanically, not
+        documented and hoped for.</figcaption>
+    </figure>
+
+    <h2>Concurrency, and what a crash leaves behind</h2>
+    <p>An append-only log is only append-only if concurrent writers can't interleave. Sequence
+      allocation reads the tail <em>inside</em> a <code>BEGIN IMMEDIATE</code> transaction, so two
+      writers cannot claim the same number. The wrapper is re-entrant: already inside a transaction,
+      it just calls through, so nested calls join the outer commit instead of deadlocking.</p>
+
+    <figure class="wide" data-viz="race">
+      <div class="fig-top"><svg data-race-svg role="img" aria-label="Forty concurrent appends resolving into one contiguous chain"></svg></div>
+      <div class="ctrls">
+        <button class="ctrl" type="button" data-race-act="guarded" aria-pressed="true">With the write lock</button>
+        <button class="ctrl" type="button" data-race-act="unguarded" aria-pressed="false">Without it</button>
+        <button class="ctrl" type="button" data-race-act="replay">Replay</button>
+      </div>
+      <figcaption><b>Fig. 3.</b> <span data-race-status></span> The test is not a simulation: two
+        <code>node:worker_threads</code> workers open separate SQLite connections to a shared file and
+        are released simultaneously by an <code>Atomics.wait</code>/<code>notify</code> barrier on a
+        <code>SharedArrayBuffer</code>. Twenty appends each must yield one contiguous 40-entry chain.
+        A second test races two approvers at one pending action: exactly one wins, the other gets
+        <code>NOT_PENDING</code>, and exactly one succeeded execution row remains.</figcaption>
+    </figure>
+
+    <p>Every state transition is a compare-and-swap: <code>UPDATE … WHERE id = ? AND status =
+      '&lt;expected&gt;'</code> with a check that exactly one row changed. Double-dispatch isn't
+      unlikely; it's unrepresentable.</p>
+
+    <h3>The crash window has no clean solution</h3>
+    <p>Between "approval committed" and "the backend actually did the thing," the process can die.
+      Those two cannot be made atomic, because the backend call is precisely the part that might fail. So
+      execution state is committed <strong>before</strong> dispatch, accepting an orphan-started
+      window, and a boot-time pass fails any attempt the previous process abandoned.</p>
+    <p>Recovery terminally fails the abandoned attempt and returns the action to pending for a fresh
+      human decision, while the old approval stays immutably consumed by the failed execution. The execution's approval id is unique, so a retry demands a <em>new</em> approval. The recovered
+      action cannot reuse the original human's consent. A thirty-second grace period exists for
+      exactly one reason: so a second process doesn't cancel a first process's live dispatch.</p>
+    <p>Failure is recorded in a separate transaction from the attempt. Success is one atomic commit;
+      failure rolls that back and opens a new transaction to write the terminal state. The invariant
+      is that a failure never erases the fact that something started.</p>
+
+    <h2>The hardest problem</h2>
+    <p>Proving that a recorded human approval actually authorized the side effect that occurred, across a process crash, a concurrent approver, and an adversary with write access to the
+      database.</p>
+    <p>Sealing the action and its parameters is the easy half. The binding seals fourteen fields, and
+      each one is there because omitting it opens a specific attack. Without the delegation id, an
+      approval survives revocation of the authority it was granted under. Without the effective
+      authority hash, the grant can be widened after the human looked at it. Without the action-event
+      id, the approval detaches from the evaluation it was based on.</p>
+    <p>Checking it is roughly thirty comparisons and every one has to be the right comparison. The
+      check re-canonicalizes the parameters, recomputes the payload hash, re-validates and re-hashes
+      the authority snapshot, re-runs the <em>historical</em> policy engine and requires the result
+      still be "approval required" with the same risk class and rule id, recomputes the authorization
+      hash, re-resolves live provenance, and compares eighteen fields of the original evaluation
+      event.</p>
+    <p>The subtle one is that the pending row's own timestamp is untrusted. Time-to-live is anchored to
+      the hash-chained event, not the mutable row, so editing a <code>created_at</code> column cannot
+      buy an attacker extra approval time.</p>
+
+    <div class="pull">The hard part isn't any single check. It's that the set has to be complete. Every unverified field is an attack.</div>
+
+    <p>And it has to be re-checkable offline by someone who doesn't trust the runtime. That verifier is
+      the largest thing in the repository: it does zero I/O, re-derives policy and authority decisions
+      rather than believing the stored ones, replays kill-switch state from the audit sequence and
+      cross-checks it against what each evaluation recorded, detects cycles in two separate graphs,
+      verifies both hash projections, and proves the approval-to-execution mapping is exactly
+      one-to-one.</p>
+    <p>Re-deriving rather than trusting has a real cost, and it's worth naming: every historical policy
+      version must be retained forever. An unknown version returns null rather than a decision,
+      specifically so an unsupported version can never be mistaken for an authentic historical block.</p>
+
+    <h2>What I'd tell you in an interview</h2>
+    <p>The parts I'd want to be asked about, before you find them yourself:</p>
+    <ul>
+      <li><strong>There is no authentication.</strong> Identity comes from unverified headers and the
+        code says so out loud. This project is about authorization, separation of duties and role gating, not about proving who you are.</li>
+      <li><strong>There are no performance numbers</strong> because there are no benchmarks. I won't
+        put a speed claim on work I didn't measure.</li>
+      <li><strong>The verifier has a known hot spot</strong>, a filter over approvals and executions
+        inside a loop over pending actions, which is O(n·m). It hasn't mattered at the scale this runs
+        at, and I'd rather name it than have it found.</li>
+      <li><strong>It's a single-machine SQLite runtime</strong> with no deployment, no telemetry, and
+        no users. Multi-writer at real scale is a different problem than the one I solved.</li>
+      <li><strong>The commit history understates it.</strong> Roughly five hours of commits; the largest artifacts (the verifier, the authority module, eight test files) landed in the working
+        tree. Judge the code, not the graph.</li>
+    </ul>
+
+
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="w">
+    <span>© <span id="year">2026</span> Saiyed Saizan Shahnawaz</span>
+    <span class="sp"></span>
+    <a href="../#work">Projects</a>
+    <a href="https://github.com/SaiyedSaizan">GitHub</a>
+    <a href="mailto:shahnawaz@wisc.edu">Email</a>
+  </div>
+</footer>
+
+<script src="../assets/main.js"></script>
+<script src="../assets/viz.js"></script>
+</body>
+</html>

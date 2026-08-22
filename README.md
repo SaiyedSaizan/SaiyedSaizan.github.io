@@ -1,110 +1,119 @@
 # saiyedsaizan.github.io
 
-Personal site. Plain HTML, CSS and JavaScript. **No build step, no dependencies, no npm install.**
-Edit a file, push, and it is live.
+Personal site. Next.js App Router, statically exported and served by GitHub Pages.
 
 Live at <https://saiyedsaizan.github.io>.
 
 ---
 
-## Publishing a change
+## Two halves, on purpose
 
-From this folder:
+**The homepage** is the Next.js app: hero with a WebGL agent core, a Flow deep dive with a
+scroll-linked architecture diagram and a steppable tool trace, four project cards, principles,
+about, contact, and a `/` command menu.
 
-```bash
-git add .
-git commit -m "..."
-git push
+**The case studies** are four hand-written static pages in `public/projects/`. They are plain
+HTML, CSS and JavaScript with no build step and no dependencies, because their interactive
+figures (a real SHA-256 chain verifier, a CAS race simulation, an await-boundary state machine)
+were written that way and work better untouched. `next build` copies `public/` into the export
+verbatim, so both halves ship from one command.
+
+They share a palette but not a stylesheet. If you change a colour on one side, change it on the
+other: `app/globals.css` `:root` and `public/assets/style.css` `:root`.
+
+---
+
+## Content lives in two files
+
+Almost everything a recruiter reads comes from:
+
+```
+data/profile.ts     profile, focus areas, principles, projects, experience, skills
+data/scenarios.ts   the three tool traces in the Flow simulator
 ```
 
-Live in under a minute. GitHub Pages is already configured to serve `main` from the repo root.
+Edit those rather than the components. The Flow metric strip and the architecture stage labels
+are the exceptions: they are in `components/flow-case-study.tsx` and
+`components/flow-architecture.tsx`.
 
-## Preview locally
+---
 
-Opening `index.html` from Explorer mostly works, but root-relative links (the 404 page) won't
-resolve. Run a real server:
+## Rules this site holds to
+
+Breaking these is how it starts sounding like everyone else's portfolio.
+
+1. **No invented numbers.** Every figure traces to one of the engineering audits. If you cannot
+   name where a number came from, it does not go on the page. The tests in
+   `tests/scenarios.test.ts` enforce the smaller version of this: the simulator can only
+   demonstrate tool names that exist.
+2. **No em dashes.** Commas, colons and full stops. There are currently zero in the repo.
+3. **No lines-of-code metrics.** Test counts and data-scale numbers only.
+4. **Name the limitation before a reader finds it.** Every case study ends with what the project
+   does not do.
+5. **Nothing on a page a visitor should not read.** No TODOs, no notes to self, no "coming soon".
+6. **Accessibility is a gate, not a goal.** Homepage and all four case studies pass axe-core with
+   zero violations across WCAG 2.0 and 2.1, A and AA. Figures pair coral with cyan, never red with
+   green, because red and green collapse under protanopia and a broken record has to stay
+   readable.
+
+---
+
+## Run locally
 
 ```bash
-python3 -m http.server 8000
-# then open http://localhost:8000
+npm install
+npm run dev          # http://localhost:3000
+```
+
+Check it the way CI does:
+
+```bash
+npx tsc --noEmit
+npx vitest run       # unit tests
+npx playwright test  # e2e, needs a browser installed
+npx next build       # writes the static export to ./out
+```
+
+To preview exactly what Pages will serve:
+
+```bash
+npx next build && (cd out && python3 -m http.server 8000)
 ```
 
 ---
 
-## What's where
+## Deploying
 
-```
-index.html                     landing page
-projects/
-  agent-governance-runtime.html
-  flow.html
-  ai-watch.html
-  physical-ai.html
-writing/
-  index.html                   notes page (off the primary nav until a post ships)
-  _template.html               copy this to start a post
-assets/
-  style.css                    all styling, both themes, one file
-  main.js                      theme toggle + footer year
-  viz.js                       the interactive figures
-  img/                         portrait + project screenshots (WebP)
-  fonts/                       Instrument Serif (SIL Open Font Licence)
-Saiyed-Saizan-Shahnawaz-Resume.pdf
-404.html · robots.txt · sitemap.xml · .nojekyll
-```
+Pushing to `main` is the whole workflow. `.github/workflows/deploy.yml` runs typecheck, the unit
+suite, and `next build`, then publishes `out/` to Pages. A failing test does not reach the site.
 
-`.nojekyll` matters. It stops GitHub running the files through Jekyll, which would ignore anything
-starting with an underscore (including `writing/_template.html`).
+One-time setup, in the repository's **Settings → Pages**: set **Source** to **GitHub Actions**.
+This repo no longer serves files straight from the branch, so leaving it on "Deploy from a
+branch" will publish the raw Next.js source instead of the built site.
+
+`out/.nojekyll` is created by the workflow. Without it Pages runs the output through Jekyll,
+which drops every path beginning with an underscore, including all of `/_next`.
 
 ---
 
-## Design rules this site tries to keep
+## What is where
 
-Worth knowing before you edit, because breaking them is how it starts looking generic.
-
-1. **Monospace only for real technical metadata:** stacks, figure labels, code, terminal output.
-   Not for section headings, dates, or eyebrow labels.
-2. **The accent does one job at a time.** If two things on a screen are orange, one of them is wrong.
-3. **Evidence over decoration.** A real screenshot beats a diagram; a diagram beats an icon. If
-   there's no real asset yet, leave the slot honest rather than filling it.
-4. **Not every project gets identical treatment.** The hierarchy on the homepage is deliberate.
-
-### Colour
-
-Everything is in the `:root` block at the top of `assets/style.css`, with the dark theme in the
-`html[data-theme="dark"]` block right below it.
-
-Both palettes were checked against a contrast and colour-blindness validator:
-
-- Figures use **red and blue**, never red and green. Red/green fails protanopia separation at
-  ΔE 5.7, which would make a broken record indistinguishable from a valid one.
-- `--accent` (#c9451f) is only 4.4:1 on the paper, so it's used for **fills, marks and borders**.
-  Text that needs to be orange uses `--accent-2` (#9c3416, 6.6:1).
-- `--ink-3` is the lightest text tone that still clears 4.5:1 on the paper. Don't lighten it.
-
-If you change the palette, re-check it. The whole site currently passes axe-core with zero
-violations in both themes.
-
-### Figures
-
-SVG can't reliably use CSS variables in presentation attributes, so figures paint through classes:
-`f-blue` `f-acc` `f-ink2` `f-ink3` `f-bluebg` `f-accbg` `f-surf` `f-none` for fills, `s-blue`
-`s-acc` `s-ink3` `s-rule` `s-rule2` for strokes, plus `dash`. Use those and a figure follows the
-theme toggle with no second copy of the artwork.
-
-### Images
-
-Screenshots go in `assets/img/` as WebP. Always set `width` and `height` on the `<img>` (prevents
-layout shift), plus `loading="lazy"` and `decoding="async"`, and write real alt text describing
-what the screenshot *shows*, not that it is a screenshot.
-
-Light UI screenshots are dimmed slightly in dark mode via `--shot-filter` so they don't glare.
-
-### A new blog post
-
-1. `cp writing/_template.html writing/your-slug.html`
-2. Replace every `{{ ... }}` placeholder
-3. In `writing/index.html`, add a `<ul class="posts">` list with your row
-4. Add the URL to `sitemap.xml`
-5. Re-add `<a href="writing/">Writing</a>` to the primary nav in every page's header
-
+```
+app/
+  layout.tsx            metadata, JSON-LD, viewport
+  page.tsx              renders <Portfolio />
+  globals.css           the entire homepage design, one file
+  manifest.ts robots.ts sitemap.ts not-found.tsx
+components/             one file per section, plus the palette and the simulator
+data/                   profile.ts, scenarios.ts
+lib/site-url.ts         the canonical origin used by metadata and the sitemap
+public/
+  projects/*.html       the four case studies
+  assets/style.css      case-study styling
+  assets/viz.js         the interactive figures, including a synchronous SHA-256
+  assets/img/           case-study screenshots, plus saizan.webp (the portrait,
+                        currently unreferenced: this design has no portrait slot)
+  Saiyed-Saizan-Shahnawaz-Resume.pdf
+tests/                  vitest unit tests, plus tests/e2e for Playwright and axe
+.github/workflows/deploy.yml
+```

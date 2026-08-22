@@ -1,0 +1,57 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Allow one concurrent deployment. A queued run is superseded rather than
+# cancelled mid-deploy, so a half-published site is not possible.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # The build is gated on the tests. A red suite does not reach the site.
+      - run: npx tsc --noEmit
+      - run: npx vitest run
+
+      - run: npx next build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://saiyedsaizan.github.io
+
+      # `output: "export"` writes the prerendered site to ./out.
+      # .nojekyll stops Pages running the output through Jekyll, which would
+      # drop every path beginning with an underscore, including /_next.
+      - run: touch out/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
