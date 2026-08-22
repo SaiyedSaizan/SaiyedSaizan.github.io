@@ -9,7 +9,7 @@ test("portfolio exposes the core recruiter journey", async ({ page }) => {
   await expect(page.getByRole("heading", { name: /Agent Governance Runtime/i })).toBeAttached();
   await expect(page.getByRole("link", { name: /Résumé/i }).first()).toHaveAttribute(
     "href",
-    "/Saiyed-Saizan-Shahnawaz-Resume.pdf",
+    "/Saiyed-Saizan-Shahnawaz-Resume.pdf?v=2026-08-14",
   );
 
   await page.keyboard.press("Slash");

@@ -19,7 +19,9 @@ export const profile = {
   email: "shahnawaz@wisc.edu",
   github: "https://github.com/SaiyedSaizan",
   linkedin: "https://www.linkedin.com/in/saiyed-saizan-shahnawaz",
-  resume: "/Saiyed-Saizan-Shahnawaz-Resume.pdf",
+  // Version the URL so a browser that cached an older PDF at this path is
+  // forced to re-fetch. Bump the date whenever the PDF is replaced.
+  resume: "/Saiyed-Saizan-Shahnawaz-Resume.pdf?v=2026-08-14",
   availability: "Looking for Summer 2027 software engineering and AI internships",
   education: {
     school: "University of Wisconsin–Madison",
